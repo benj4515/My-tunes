@@ -3,6 +3,7 @@ module dk.easv.mytunes {
     requires javafx.fxml;
     requires java.sql;
     requires com.microsoft.sqlserver.jdbc;
+    requires java.naming;
 
 
     opens dk.easv.mytunes to javafx.fxml;
