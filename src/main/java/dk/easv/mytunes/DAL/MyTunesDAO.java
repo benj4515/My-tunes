@@ -33,8 +33,9 @@ public class MyTunesDAO implements ISongDataAccess {
                 String artist = rs.getString("Artist");
                 String category = rs.getString("Category");
                 String address = rs.getString("Address");
+                int time = rs.getInt("Time");
 
-                MyTunes song = new MyTunes(id, title, artist, category, address);
+                MyTunes song = new MyTunes(id, title, artist, category, address, time);
                 allSongs.add(song);
             }
             return allSongs;

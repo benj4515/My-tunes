@@ -7,13 +7,15 @@ public class MyTunes {
     private String artist;
     private String category;
     private String address;
+    private int time;
 
-    public MyTunes(int id, String title, String artist, String category, String address) {
+    public MyTunes(int id, String title, String artist, String category, String address, int time) {
         this.id = id;
         this.title = title;
         this.artist = artist;
         this.category = category;
         this.address = address;
+        this.time = time;
     }
 
     public int getId() {
@@ -50,5 +52,13 @@ public class MyTunes {
 
     public void setAddress() {
         this.address = address;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    public void setTime() {
+        this.time = time;
     }
 }

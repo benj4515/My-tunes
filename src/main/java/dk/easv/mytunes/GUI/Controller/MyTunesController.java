@@ -2,6 +2,7 @@ package dk.easv.mytunes.GUI.Controller;
 
 import dk.easv.mytunes.BE.MyTunes;
 import dk.easv.mytunes.GUI.Model.MyTunesModel;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -24,6 +25,9 @@ public class MyTunesController implements Initializable {
 
     @FXML
     private TableColumn<MyTunes, String> colCategory;
+
+    @FXML
+    private TableColumn<MyTunes, String> colTime;
 
 
     private MyTunesModel myTunesModel;
@@ -49,10 +53,13 @@ public class MyTunesController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
+        // setup columns in tableview
         colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         colArtist.setCellValueFactory(new PropertyValueFactory<>("artist"));
         colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
+        colTime.setCellValueFactory(new PropertyValueFactory<>("time"));
 
+        // connect tableview + listview to the ObservableList
         tblSongs.setItems(myTunesModel.getObservableSongs());
     }
 }
