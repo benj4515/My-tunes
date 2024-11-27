@@ -64,11 +64,11 @@
             <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="420.0" prefWidth="200.0">
                <children>
                   <Label text="Playlists" textFill="WHITE" />
-                  <TableView prefHeight="350.0" prefWidth="205.0">
+                  <TableView fx:id="tblPlaylists" prefHeight="350.0" prefWidth="205.0">
                     <columns>
-                      <TableColumn text="Name" />
-                      <TableColumn prefWidth="57.0" text="Songs" />
-                        <TableColumn prefWidth="62.0" text="Time" />
+                      <TableColumn fx:id="colName" text="Name" />
+                      <TableColumn fx:id="colSongCount" prefWidth="57.0" text="Songs" />
+                        <TableColumn fx:id="colTotalTime" prefWidth="62.0" text="Time" />
                     </columns>
                   </TableView>
                   <AnchorPane prefHeight="50.0" prefWidth="205.0">
@@ -83,7 +83,7 @@
             <VBox maxWidth="-Infinity" minWidth="-Infinity" prefHeight="370.0" prefWidth="200.0">
                <children>
                   <Label text="Songs on Playlist" textFill="WHITE" />
-                  <ListView minHeight="-Infinity" prefHeight="350.0" prefWidth="174.0" />
+                  <ListView fx:id="lstSongsOnList" minHeight="-Infinity" prefHeight="350.0" prefWidth="174.0" />
                   <AnchorPane prefHeight="50.0" prefWidth="205.0">
                      <children>
                         <Button layoutY="13.0" mnemonicParsing="false" prefWidth="35.0" style="-fx-background-color: gray; -fx-background-radius: 10;" text="⬆" />
@@ -101,12 +101,12 @@
             <VBox prefHeight="370.0" prefWidth="388.0">
                <children>
                   <Label text="Songs" textFill="WHITE" />
-                  <TableView maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="366.0">
+                  <TableView fx:id="tblSongs" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="366.0">
                     <columns>
-                      <TableColumn prefWidth="118.0" text="Title" />
-                      <TableColumn minWidth="50.0" prefWidth="107.0" text="Artist" />
-                        <TableColumn minWidth="50.0" prefWidth="72.0" text="Category" />
-                        <TableColumn minWidth="50.0" prefWidth="68.0" text="Time" />
+                      <TableColumn fx:id="colTitle" prefWidth="118.0" text="Title" />
+                      <TableColumn fx:id="colArtist" minWidth="50.0" prefWidth="107.0" text="Artist" />
+                        <TableColumn fx:id="colCategory" minWidth="50.0" prefWidth="72.0" text="Category" />
+                        <TableColumn fx:id="colTime" minWidth="50.0" prefWidth="68.0" text="Time" />
                     </columns>
                   </TableView>
                   <AnchorPane prefHeight="50.0" prefWidth="205.0">
