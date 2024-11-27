@@ -4,16 +4,13 @@ import dk.easv.mytunes.BE.MyTunes;
 import dk.easv.mytunes.GUI.Model.MyTunesModel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class HelloController implements Initializable {
+public class MyTunesController implements Initializable {
 
 
     @FXML
@@ -31,7 +28,7 @@ public class HelloController implements Initializable {
 
     private MyTunesModel myTunesModel;
 
-    public HelloController() {
+    public MyTunesController() {
 
         try {
             myTunesModel = new MyTunesModel();
