@@ -7,7 +7,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
+import javafx.util.Duration;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -31,6 +36,20 @@ public class MyTunesController implements Initializable {
 
 
     private MyTunesModel myTunesModel;
+
+    @FXML
+    private MediaView mediaViewThing;
+    @FXML
+    private Button btnPlay;
+    @FXML
+    private Button btnLast;
+    @FXML
+    private Button btnNext;
+
+    private MyTunes selectedSong;
+    private MediaPlayer mediaPlayer;
+    @FXML
+    private Label lblPlayingSong;
 
     public MyTunesController() {
 
@@ -61,5 +80,56 @@ public class MyTunesController implements Initializable {
 
         // connect tableview + listview to the ObservableList
         tblSongs.setItems(myTunesModel.getObservableSongs());
+
+        // table view listener (when user selects a song in the tableview)
+        tblSongs.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                selectedSong = newValue; // Set the selected song
+                System.out.println("Selected song: " + selectedSong.getAddress());
+                lblPlayingSong.setText("Selected: " + selectedSong.getTitle());
+            }
+        });
+    }
+
+    @FXML
+    private void onPlayButtonPressed(ActionEvent actionEvent) {
+        if (mediaPlayer == null) {
+            playSong();
+        } else {
+            MediaPlayer.Status status = mediaPlayer.getStatus();
+            if (status == MediaPlayer.Status.PLAYING) {
+                mediaPlayer.pause();
+            } else if (status == MediaPlayer.Status.PAUSED || status == MediaPlayer.Status.STOPPED) {
+                mediaPlayer.play();
+            }
+        }
+    }
+
+    private void playSong() {
+        if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+            mediaPlayer.stop();
+            System.out.println("Stopped music: " + selectedSong.getTitle());
+        } else if (selectedSong != null) {
+            Media pick = new Media(new File("src/main/resources/" + selectedSong.getAddress()).toURI().toString());
+            mediaPlayer = new MediaPlayer(pick); // Initialize MediaPlayer
+            mediaPlayer.play();
+            System.out.println("Playing music: " + selectedSong.getTitle());
+            lblPlayingSong.setText("Playing: " + selectedSong.getTitle());
+        } else {
+            System.out.println("No song selected");
+            lblPlayingSong.setText("No song selected");
+        }
+    }
+
+    @FXML
+    private void onLastButtonPressed(ActionEvent actionEvent) {
+        tblSongs.getSelectionModel().selectPrevious();
+        playSong();
+    }
+
+    @FXML
+    private void onNextButtonPressed(ActionEvent actionEvent) {
+        tblSongs.getSelectionModel().selectNext();
+        playSong();
     }
 }
