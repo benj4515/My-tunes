@@ -106,12 +106,12 @@ public class MyTunesController implements Initializable {
     }
 
     private void playSong() {
-        if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
-            mediaPlayer.stop();
-            System.out.println("Stopped music: " + selectedSong.getTitle());
-        } else if (selectedSong != null) {
+        if (selectedSong != null) {
+            if (mediaPlayer != null) {
+                mediaPlayer.stop();
+            }
             Media pick = new Media(new File("src/main/resources/" + selectedSong.getAddress()).toURI().toString());
-            mediaPlayer = new MediaPlayer(pick); // Initialize MediaPlayer
+            mediaPlayer = new MediaPlayer(pick);
             mediaPlayer.play();
             System.out.println("Playing music: " + selectedSong.getTitle());
             lblPlayingSong.setText("Playing: " + selectedSong.getTitle());
