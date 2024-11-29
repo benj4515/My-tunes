@@ -4,20 +4,29 @@ import dk.easv.mytunes.BE.MyTunes;
 import dk.easv.mytunes.GUI.Model.MyTunesModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class MyTunesController implements Initializable {
 
+    @FXML
+    public Button btnNewSong;
 
     @FXML
     private TableView<MyTunes> tblSongs;
@@ -131,5 +140,16 @@ public class MyTunesController implements Initializable {
     private void onNextButtonPressed(ActionEvent actionEvent) {
         tblSongs.getSelectionModel().selectNext();
         playSong();
+    }
+
+    @FXML
+    private void onNewSongButtonPressed(ActionEvent actionEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/NewSongView.fxml"));
+        Parent root = fxmlLoader.load();
+        Stage stage = new Stage();
+        stage.setTitle("New/Edit Song");
+        stage.setScene(new Scene(root));
+        stage.initModality(Modality.APPLICATION_MODAL); // Optional: makes the new window modal
+        stage.show();
     }
 }

@@ -13,7 +13,7 @@ import java.net.URISyntaxException;
 
 public class HelloApplication extends Application {
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/MyTunesView.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
@@ -22,12 +22,10 @@ public class HelloApplication extends Application {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         launch(args);
     }
 }
