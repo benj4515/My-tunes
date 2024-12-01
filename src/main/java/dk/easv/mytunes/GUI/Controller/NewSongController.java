@@ -1,35 +1,92 @@
 package dk.easv.mytunes.GUI.Controller;
 
+import dk.easv.mytunes.BE.MyTunes;
+import dk.easv.mytunes.GUI.Model.MyTunesModel;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 public class NewSongController {
-    @FXML
-    public Button btnSave;
 
     @FXML
-    public Button btnCancel;
+    private Button btnSave, btnWaV, btnMP3, btnChooseFile, btnCategoryMore;
 
     @FXML
-    public Button btnChooseFile;
+    private Button btnCancel;
 
     @FXML
-    public Button btnCategoryMore;
+    public ComboBox<String> cbbCategory;
 
     @FXML
-    public ComboBox cbbCategory;
+    public TextField txtTime, txtFile, txtArtist, txtTitle;
+
+    private MyTunesModel myTunesModel;
+
+    public NewSongController() {
+
+        try {
+            myTunesModel = new MyTunesModel();
+        } catch (Exception e) {
+            displayError(e);
+            e.printStackTrace();
+        }
+    }
 
     @FXML
-    public TextField txtTime;
+    private void initialize() {
+        cbbCategory.getItems().addAll(
+                "Pop", "Rock", "Jazz", "Classical", "Hip-Hop",
+                "Country", "Reggae", "Electronic", "Blues", "Folk"
+        );
+        cbbCategory.setEditable(true);
+    }
+    private void displayError(Throwable t)
+    {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Something went wrong");
+        alert.setHeaderText(t.getMessage());
+        alert.showAndWait();
+    }
 
     @FXML
-    public TextField txtFile;
+    public void onCreate(ActionEvent actionEvent) throws Exception {
 
-    @FXML
-    public TextField txtArtist;
+        // Getting data from ui
+        String title = txtTitle.getText();
+        String artist = txtArtist.getText();
+        int time = Integer.parseInt(txtTime.getText());
+        String adress = txtFile.getText();
+        String category = cbbCategory.getId();
 
+        if (title.isEmpty() || artist.isEmpty() || category.isEmpty() || adress.isEmpty()) {
+            System.out.println("All fields are required.");
+            return;
+        }
+
+        // new song object
+        MyTunes newSong = new MyTunes(-1,title, artist, category, adress, time);
+
+        // call model to create song in the dal
+        myTunesModel.createSong(newSong);
+
+        Stage stage = (Stage) btnSave.getScene().getWindow();
+        stage.close();
+
+        //MyTunesController.tableRefresh();
+
+    }
     @FXML
-    public TextField txtTitle;
+    public void onCancelButtonPressed(ActionEvent actionEvent) {
+        System.out.printf("test");
+    }
+
+    public void onMP3Pressed(ActionEvent actionEvent) {
+    }
+
+    public void onWAVPressed(ActionEvent actionEvent) {
+    }
 }

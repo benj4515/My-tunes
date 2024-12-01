@@ -20,4 +20,10 @@ public class MyTunesModel {
     public ObservableList<MyTunes> getObservableSongs() {
         return songsToBeViewed;
     }
+
+    public MyTunes createSong(MyTunes newSong) throws Exception {
+        MyTunes songCreated = myTunesManager.createSong(newSong);
+        songsToBeViewed.add(songCreated);
+        return songCreated;
+    }
 }

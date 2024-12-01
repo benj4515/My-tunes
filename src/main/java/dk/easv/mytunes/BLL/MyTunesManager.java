@@ -18,4 +18,8 @@ public class MyTunesManager {
     public List<MyTunes> getAllSongs() throws Exception {
         return songsDAO.getAllSongs();
     }
+
+    public MyTunes createSong(MyTunes newSong) throws Exception {
+        return songsDAO.createSong(newSong);
+    }
 }

@@ -152,4 +152,8 @@ public class MyTunesController implements Initializable {
         stage.initModality(Modality.APPLICATION_MODAL); // Optional: makes the new window modal
         stage.show();
     }
+
+    public void tableRefresh(){
+        tblSongs.refresh();
+    }
 }

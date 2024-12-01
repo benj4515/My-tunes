@@ -7,4 +7,5 @@ import java.util.List;
 public interface ISongDataAccess {
 
     List<MyTunes> getAllSongs() throws Exception;
+    MyTunes createSong(MyTunes newSong) throws Exception;
 }
