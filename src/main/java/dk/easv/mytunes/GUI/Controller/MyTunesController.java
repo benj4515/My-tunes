@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Modality;
@@ -102,28 +103,39 @@ public class MyTunesController implements Initializable {
 
     @FXML
     private void onPlayButtonPressed(ActionEvent actionEvent) {
-        if (mediaPlayer == null) {
-            playSong();
-        } else {
-            MediaPlayer.Status status = mediaPlayer.getStatus();
-            if (status == MediaPlayer.Status.PLAYING) {
-                mediaPlayer.pause();
-            } else if (status == MediaPlayer.Status.PAUSED || status == MediaPlayer.Status.STOPPED) {
-                mediaPlayer.play();
+        if (selectedSong != null) {
+            if (mediaPlayer == null || !mediaPlayer.getMedia().getSource().equals(new File("src/main/resources/" + selectedSong.getAddress()).toURI().toString())) {
+                playSong();
+            } else {
+                MediaPlayer.Status status = mediaPlayer.getStatus();
+                if (status == MediaPlayer.Status.PLAYING) {
+                    mediaPlayer.pause();
+                } else if (status == MediaPlayer.Status.PAUSED || status == MediaPlayer.Status.STOPPED) {
+                    mediaPlayer.play();
+                }
             }
+        } else {
+            System.out.println("No song selected");
+            lblPlayingSong.setText("No song selected");
         }
     }
 
     private void playSong() {
         if (selectedSong != null) {
-            if (mediaPlayer != null) {
-                mediaPlayer.stop();
+            try {
+                if (mediaPlayer != null) {
+                    mediaPlayer.stop();
+                }
+                Media pick = new Media(new File("src/main/resources/" + selectedSong.getAddress()).toURI().toString());
+                mediaPlayer = new MediaPlayer(pick);
+                mediaPlayer.play();
+                System.out.println("Playing music: " + selectedSong.getTitle());
+                lblPlayingSong.setText("Playing: " + selectedSong.getTitle());
+            } catch (MediaException e) {
+                displayError(e);
+                System.out.println("Error playing media: " + e.getMessage());
+                lblPlayingSong.setText("Error playing media");
             }
-            Media pick = new Media(new File("src/main/resources/" + selectedSong.getAddress()).toURI().toString());
-            mediaPlayer = new MediaPlayer(pick);
-            mediaPlayer.play();
-            System.out.println("Playing music: " + selectedSong.getTitle());
-            lblPlayingSong.setText("Playing: " + selectedSong.getTitle());
         } else {
             System.out.println("No song selected");
             lblPlayingSong.setText("No song selected");
