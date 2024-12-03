@@ -12,7 +12,6 @@ import javafx.stage.Stage;
 
 public class NewSongController {
 
-    private boolean hasExtension = false;
     @FXML
     private Button btnSave, btnWaV, btnMP3, btnChooseFile, btnCategoryMore;
 
@@ -26,6 +25,12 @@ public class NewSongController {
     public TextField txtTime, txtFile, txtArtist, txtTitle;
 
     private MyTunesModel myTunesModel;
+
+    private MyTunesController myTunesController;
+
+    public void setMyTunesController(MyTunesController myTunesController) {
+        this.myTunesController = myTunesController;
+    }
 
     public NewSongController() {
 
@@ -60,7 +65,6 @@ public class NewSongController {
 
     @FXML
     public void onCreate(ActionEvent actionEvent) throws Exception {
-
         // Getting data from ui
         String title = txtTitle.getText();
         String artist = txtArtist.getText();
@@ -78,12 +82,15 @@ public class NewSongController {
 
         // call model to create song in the dal
         myTunesModel.createSong(newSong);
+        System.out.println("New song created: " + newSong);
+
+        //MyTunesController.tableRefresh();
+        if (myTunesController != null) {
+            myTunesController.tableRefresh();
+        }
 
         Stage stage = (Stage) btnSave.getScene().getWindow();
         stage.close();
-
-        //MyTunesController.tableRefresh();
-
     }
     @FXML
     public void onCancelButtonPressed(ActionEvent actionEvent) {

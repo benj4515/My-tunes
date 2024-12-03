@@ -2,6 +2,7 @@ package dk.easv.mytunes.GUI.Controller;
 
 import dk.easv.mytunes.BE.MyTunes;
 import dk.easv.mytunes.GUI.Model.MyTunesModel;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -158,6 +159,11 @@ public class MyTunesController implements Initializable {
     private void onNewSongButtonPressed(ActionEvent actionEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/NewSongView.fxml"));
         Parent root = fxmlLoader.load();
+
+        // Get the controller of the new song view
+        NewSongController newSongController = fxmlLoader.getController();
+        newSongController.setMyTunesController(this); // Pass the current controller to the new controller
+
         Stage stage = new Stage();
         stage.setTitle("New/Edit Song");
         stage.setScene(new Scene(root));
@@ -165,7 +171,17 @@ public class MyTunesController implements Initializable {
         stage.show();
     }
 
-    public void tableRefresh(){
-        tblSongs.refresh();
+    public void tableRefresh() {
+        System.out.println("tableRefresh called");
+        try {
+            myTunesModel.refreshSongs();
+        } catch (Exception e) {
+            displayError(e);
+        }
+        ObservableList<MyTunes> currentSongs = myTunesModel.getObservableSongs();
+        System.out.println("Number of songs: " + currentSongs.size());
+        tblSongs.setItems(null); // Clear the table
+        tblSongs.setItems(currentSongs); // Reset the items
+        tblSongs.refresh(); // Refresh the table
     }
 }

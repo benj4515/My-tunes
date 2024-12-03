@@ -24,6 +24,11 @@ public class MyTunesModel {
     public MyTunes createSong(MyTunes newSong) throws Exception {
         MyTunes songCreated = myTunesManager.createSong(newSong);
         songsToBeViewed.add(songCreated);
+        System.out.println("Song added to ObservableList" + songCreated);
         return songCreated;
+    }
+    public void refreshSongs() throws Exception {
+        songsToBeViewed.clear();
+        songsToBeViewed.addAll(myTunesManager.getAllSongs());
     }
 }
