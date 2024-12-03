@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 
 public class NewSongController {
 
+    private boolean hasExtension = false;
     @FXML
     private Button btnSave, btnWaV, btnMP3, btnChooseFile, btnCategoryMore;
 
@@ -43,6 +44,11 @@ public class NewSongController {
                 "Country", "Reggae", "Electronic", "Blues", "Folk"
         );
         cbbCategory.setEditable(true);
+
+        // Add lisetner
+        txtTitle.textProperty().addListener((observable, oldValue, newValue) -> {
+            txtFile.setText("Music/" + newValue);
+        });
     }
     private void displayError(Throwable t)
     {
@@ -85,8 +91,22 @@ public class NewSongController {
     }
 
     public void onMP3Pressed(ActionEvent actionEvent) {
+        String currentText = txtFile.getText();
+        if (currentText.toLowerCase().endsWith(".wav")) {
+            currentText = currentText.substring(0, currentText.lastIndexOf('.')) + ".mp3";
+        } else if (!currentText.toLowerCase().endsWith(".mp3")) {
+            currentText += ".mp3";
+        }
+        txtFile.setText(currentText);
     }
 
     public void onWAVPressed(ActionEvent actionEvent) {
+        String currentText = txtFile.getText();
+        if (currentText.toLowerCase().endsWith(".mp3")) {
+            currentText = currentText.substring(0, currentText.lastIndexOf('.')) + ".wav";
+        } else if (!currentText.toLowerCase().endsWith(".wav")) {
+            currentText += ".wav";
+        }
+        txtFile.setText(currentText);
     }
 }
