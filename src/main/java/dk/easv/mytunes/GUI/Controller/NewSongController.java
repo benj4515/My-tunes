@@ -45,7 +45,7 @@ public class NewSongController {
         );
         cbbCategory.setEditable(true);
 
-        // Add lisetner
+        // Add listener
         txtTitle.textProperty().addListener((observable, oldValue, newValue) -> {
             txtFile.setText("Music/" + newValue);
         });
@@ -65,16 +65,16 @@ public class NewSongController {
         String title = txtTitle.getText();
         String artist = txtArtist.getText();
         int time = Integer.parseInt(txtTime.getText());
-        String adress = txtFile.getText();
-        String category = cbbCategory.getId();
+        String address = txtFile.getText();
+        String category = cbbCategory.getValue();
 
-        if (title.isEmpty() || artist.isEmpty() || category.isEmpty() || adress.isEmpty()) {
+        if (title.isEmpty() || artist.isEmpty() || category.isEmpty() || address.isEmpty()) {
             System.out.println("All fields are required.");
             return;
         }
 
         // new song object
-        MyTunes newSong = new MyTunes(-1,title, artist, category, adress, time);
+        MyTunes newSong = new MyTunes(-1,title, artist, category, address, time);
 
         // call model to create song in the dal
         myTunesModel.createSong(newSong);
@@ -87,7 +87,7 @@ public class NewSongController {
     }
     @FXML
     public void onCancelButtonPressed(ActionEvent actionEvent) {
-        System.out.printf("test");
+        System.out.printf(cbbCategory.getValue());
     }
 
     public void onMP3Pressed(ActionEvent actionEvent) {
