@@ -86,4 +86,38 @@ public class MyTunesDAO implements ISongDataAccess {
         }
 
     }
+
+    @Override
+    public void updateSong(MyTunes song) throws Exception {
+        String sql = "UPDATE dbo.Songs SET Title = ?, Artist = ?, Category = ?, Address = ?, Time = ? WHERE ID = ?";
+
+        try (Connection conn = dbConnector.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            // Bind parameters
+            stmt.setString(1, song.getTitle());
+            stmt.setString(2, song.getArtist());
+            stmt.setString(3, song.getCategory());
+            stmt.setString(4, song.getAddress());
+            stmt.setInt(5, song.getTime());
+            stmt.setInt(6, song.getId());
+
+            // Run the specified SQL statement
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            throw new Exception("Could not get movies from database.", ex);
+        }
+    }
+
+    public void deleteSong(MyTunes song) throws Exception {
+        String sql = "DELETE FROM dbo.Songs WHERE ID = ?";
+        try (Connection conn = dbConnector.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, song.getId());
+
+            // Run the specified SQL statement
+            stmt.executeUpdate();
+        } catch (SQLException ex){
+            throw new Exception("Could not delete song", ex);
+        }
+    }
 }

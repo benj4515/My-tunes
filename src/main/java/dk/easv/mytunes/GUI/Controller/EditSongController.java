@@ -10,7 +10,10 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-public class NewSongController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class EditSongController {
 
     @FXML
     private Button btnSave, btnWaV, btnMP3, btnChooseFile, btnCategoryMore;
@@ -30,9 +33,19 @@ public class NewSongController {
 
     public void setMyTunesController(MyTunesController myTunesController) {
         this.myTunesController = myTunesController;
+
+        // Initialize the fields with the selected song's details
+        if (myTunesController.getSelectedSong() != null) {
+            MyTunes selectedSong = myTunesController.getSelectedSong();
+            txtTitle.setText(selectedSong.getTitle());
+            txtArtist.setText(selectedSong.getArtist());
+            txtTime.setText(String.valueOf(selectedSong.getTime()));
+            txtFile.setText(selectedSong.getAddress());
+            cbbCategory.setValue(selectedSong.getCategory());
+        }
     }
 
-    public NewSongController() {
+    public EditSongController() {
 
         try {
             myTunesModel = new MyTunesModel();
@@ -43,7 +56,7 @@ public class NewSongController {
     }
 
     @FXML
-    private void initialize() {
+    public void initialize(URL url, ResourceBundle resourceBundle) {
         cbbCategory.getItems().addAll(
                 "Pop", "Rock", "Jazz", "Classical", "Hip-Hop",
                 "Country", "Reggae", "Electronic", "Blues", "Folk"
@@ -64,29 +77,23 @@ public class NewSongController {
     }
 
     @FXML
-    public void onCreate(ActionEvent actionEvent) throws Exception {
-        // Getting data from ui
-        String title = txtTitle.getText();
-        String artist = txtArtist.getText();
-        int time = Integer.parseInt(txtTime.getText());
-        String address = txtFile.getText();
-        String category = cbbCategory.getValue();
+    public void onEdit(ActionEvent actionEvent) throws Exception {
+        MyTunes selectedSong = myTunesController.getSelectedSong();
 
-        if (title.isEmpty() || artist.isEmpty() || category.isEmpty() || address.isEmpty()) {
-            System.out.println("All fields are required.");
-            return;
-        }
+        if (selectedSong != null) {
+            System.out.println("Shit fuck: " + selectedSong);
+            selectedSong.setTitle(txtTitle.getText());
+            selectedSong.setArtist(txtArtist.getText());
+            selectedSong.setCategory(cbbCategory.getValue());
+            selectedSong.setAddress(txtFile.getText());
+            selectedSong.setTime(Integer.parseInt(txtTime.getText()));
 
-        // new song object
-        MyTunes newSong = new MyTunes(-1,title, artist, category, address, time);
+            myTunesModel.updateSong(selectedSong);
 
-        // call model to create song in the dal
-        myTunesModel.createSong(newSong);
-        System.out.println("New song created: " + newSong);
-
-        //MyTunesController.tableRefresh();
-        if (myTunesController != null) {
-            myTunesController.tableRefresh();
+            //MyTunesController.tableRefresh();
+            if (myTunesController != null) {
+                myTunesController.tableRefresh();
+            }
         }
 
         Stage stage = (Stage) btnSave.getScene().getWindow();
@@ -94,7 +101,7 @@ public class NewSongController {
     }
     @FXML
     public void onCancelButtonPressed(ActionEvent actionEvent) {
-        System.out.printf(txtFile.getText());
+        System.out.printf(cbbCategory.getValue());
     }
 
     public void onMP3Pressed(ActionEvent actionEvent) {

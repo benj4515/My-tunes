@@ -21,6 +21,7 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.io.IOError;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -29,6 +30,7 @@ public class MyTunesController implements Initializable {
 
     @FXML
     public Button btnNewSong;
+    public Button btnEditSong;
 
     @FXML
     private TableView<MyTunes> tblSongs;
@@ -99,7 +101,12 @@ public class MyTunesController implements Initializable {
                 System.out.println("Selected song: " + selectedSong.getAddress());
                 lblPlayingSong.setText("Selected: " + selectedSong.getTitle());
             }
+
         });
+    }
+
+    public MyTunes getSelectedSong() {
+        return selectedSong;
     }
 
     @FXML
@@ -165,10 +172,37 @@ public class MyTunesController implements Initializable {
         newSongController.setMyTunesController(this); // Pass the current controller to the new controller
 
         Stage stage = new Stage();
-        stage.setTitle("New/Edit Song");
+        stage.setTitle("New Song");
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL); // Optional: makes the new window modal
         stage.show();
+    }
+
+    @FXML
+    private void onEditSongButtonPressed(ActionEvent actionEvent) throws Exception {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/EditSongView.fxml"));
+        Parent root = fxmlLoader.load();
+
+        // Get the controller of the new song view
+        EditSongController editSongController = fxmlLoader.getController();
+        editSongController.setMyTunesController(this); // Pass the current controller to the new controller
+
+        Stage stage = new Stage();
+        stage.setTitle("Edit Song");
+        stage.setScene(new Scene(root));
+        stage.initModality(Modality.APPLICATION_MODAL); // Optional: makes the new window modal
+        stage.show();
+    }
+        
+    @FXML
+    private void onDeleteSongButtonPressed(ActionEvent actionEvent) throws Exception {
+        MyTunes selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+
+        if (selectedSong != null)
+        {
+            // Delete song in DAL layer (through the layers)
+            myTunesModel.deleteSong(selectedSong);
+        }
     }
 
     public void tableRefresh() {
@@ -184,4 +218,7 @@ public class MyTunesController implements Initializable {
         tblSongs.setItems(currentSongs); // Reset the items
         tblSongs.refresh(); // Refresh the table
     }
+
+
+    
 }

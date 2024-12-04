@@ -22,4 +22,12 @@ public class MyTunesManager {
     public MyTunes createSong(MyTunes newSong) throws Exception {
         return songsDAO.createSong(newSong);
     }
+
+    public void deleteSong(MyTunes selectedSong) throws Exception {
+        songsDAO.deleteSong(selectedSong);
+    }
+
+    public void updateSong(MyTunes updatedSong) throws Exception {
+        songsDAO.updateSong(updatedSong);
+    }
 }

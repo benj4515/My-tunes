@@ -34,7 +34,7 @@ public class MyTunes {
         return artist;
     }
 
-    public void setArtist() {
+    public void setArtist(String artist) {
         this.artist = artist;
     }
 
@@ -42,7 +42,7 @@ public class MyTunes {
         return category;
     }
 
-    public void setCategory() {
+    public void setCategory(String category) {
         this.category = category;
     }
 
@@ -50,7 +50,7 @@ public class MyTunes {
         return address;
     }
 
-    public void setAddress() {
+    public void setAddress(String address) {
         this.address = address;
     }
 
@@ -58,7 +58,7 @@ public class MyTunes {
         return time;
     }
 
-    public void setTime() {
+    public void setTime(int time) {
         this.time = time;
     }
 }
