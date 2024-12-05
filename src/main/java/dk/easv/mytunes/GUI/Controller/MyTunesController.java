@@ -31,6 +31,7 @@ public class MyTunesController implements Initializable {
     @FXML
     public Button btnNewSong;
     public Button btnEditSong;
+    public TextField txtSearch;
 
     @FXML
     private TableView<MyTunes> tblSongs;
@@ -102,6 +103,15 @@ public class MyTunesController implements Initializable {
                 lblPlayingSong.setText("Selected: " + selectedSong.getTitle());
             }
 
+        });
+
+        txtSearch.textProperty().addListener((observableValue, oldValue, newValue) -> {
+            try {
+                myTunesModel.searchSong(newValue);
+            } catch (Exception e) {
+                displayError(e);
+                e.printStackTrace();
+            }
         });
     }
 

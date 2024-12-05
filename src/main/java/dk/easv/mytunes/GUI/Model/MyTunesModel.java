@@ -5,6 +5,8 @@ import dk.easv.mytunes.BLL.MyTunesManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.List;
+
 public class MyTunesModel {
 
     private ObservableList<MyTunes> songsToBeViewed;
@@ -21,6 +23,12 @@ public class MyTunesModel {
         return songsToBeViewed;
     }
 
+    public void searchSong(String query) throws Exception {
+        List<MyTunes> searchResults = myTunesManager.searchSongs(query);
+        songsToBeViewed.clear();
+        songsToBeViewed.addAll(searchResults);
+    }
+
     public MyTunes createSong(MyTunes newSong) throws Exception {
         MyTunes songCreated = myTunesManager.createSong(newSong);
         songsToBeViewed.add(songCreated);
@@ -31,6 +39,7 @@ public class MyTunesModel {
         try {
             // Update song in DAL layer (through the layers)
             myTunesManager.updateSong(updatedSong);
+            songsToBeViewed.add(updatedSong); // en fucking linje
 
             // Find the song in the observable list
             int index = songsToBeViewed.indexOf(updatedSong);

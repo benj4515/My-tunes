@@ -1,6 +1,7 @@
 package dk.easv.mytunes.BLL;
 
 import dk.easv.mytunes.BE.MyTunes;
+import dk.easv.mytunes.BLL.Util.SongSearcher;
 import dk.easv.mytunes.DAL.ISongDataAccess;
 import dk.easv.mytunes.DAL.MyTunesDAO;
 
@@ -10,6 +11,7 @@ import java.util.List;
 public class MyTunesManager {
 
     private ISongDataAccess songsDAO;
+    private SongSearcher songSearcher = new SongSearcher();
 
     public MyTunesManager() throws IOException {
         songsDAO = new MyTunesDAO();
@@ -17,6 +19,12 @@ public class MyTunesManager {
 
     public List<MyTunes> getAllSongs() throws Exception {
         return songsDAO.getAllSongs();
+    }
+
+    public List<MyTunes> searchSongs(String query) throws Exception {
+        List<MyTunes> allSongs = getAllSongs();
+        List<MyTunes> searchResult = songSearcher.search(allSongs, query);
+        return searchResult;
     }
 
     public MyTunes createSong(MyTunes newSong) throws Exception {

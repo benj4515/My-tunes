@@ -44,7 +44,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.media.MediaView?>
-<?import javafx.scene.text.Font?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="538.0" prefWidth="886.0" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mytunes.GUI.Controller.MyTunesController">
    <children>
@@ -56,7 +55,7 @@
             <Slider layoutX="57.0" layoutY="57.0" />
             <Button layoutX="26.0" layoutY="51.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="28.0" text="Button" />
             <Label fx:id="lblPlayingSong" layoutX="397.0" layoutY="42.0" text="No song selected" textFill="WHITE" />
-            <TextField layoutX="691.0" layoutY="24.0" prefHeight="26.0" prefWidth="84.0" promptText="Search..." style="-fx-background-color: gray; -fx-background-radius: 10;" />
+            <TextField fx:id="txtSearch" layoutX="691.0" layoutY="24.0" prefHeight="26.0" prefWidth="84.0" promptText="Search..." style="-fx-background-color: gray; -fx-background-radius: 10;" />
             <Button layoutX="775.0" layoutY="24.0" mnemonicParsing="false" style="-fx-background-color: gray; -fx-background-radius: 10;" text="Filter" />
             <MediaView fx:id="mediaViewThing" fitHeight="200.0" fitWidth="200.0" layoutX="204.0" layoutY="-49.0" />
          </children>
