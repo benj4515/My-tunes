@@ -180,7 +180,7 @@ public class MyTunesController implements Initializable {
                 });
                 mediaPlayer.play();
                 System.out.println("Playing music: " + selectedSong.getTitle());
-                lblPlayingSong.setText("Playing: " + selectedSong.getTitle());
+                lblPlayingSong.setText("Playing: " + selectedSong.getTitle() + " by " + selectedSong.getArtist());
             } catch (MediaException e) {
                 displayError(e);
                 System.out.println("Error playing media: " + e.getMessage());
