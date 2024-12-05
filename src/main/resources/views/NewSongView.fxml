@@ -8,13 +8,12 @@
 
 <AnchorPane prefHeight="260.0" prefWidth="466.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mytunes.GUI.Controller.NewSongController">
    <children>
-      <Button fx:id="btnSave" layoutX="397.0" layoutY="213.0" mnemonicParsing="false" text="Save" />
-      <Button fx:id="btnCancel" layoutX="334.0" layoutY="213.0" mnemonicParsing="false" text="Cancel" />
-      <Button fx:id="btnChooseFile" layoutX="374.0" layoutY="167.0" mnemonicParsing="false" text="Choose..." />
+      <Button fx:id="btnSave" layoutX="397.0" layoutY="213.0" mnemonicParsing="false" onAction="#onCreate" text="Save" />
+      <Button fx:id="btnCancel" layoutX="334.0" layoutY="213.0" mnemonicParsing="false" onAction="#onCancelButtonPressed" text="Cancel" />
       <Button fx:id="btnCategoryMore" layoutX="262.0" layoutY="96.0" mnemonicParsing="false" text="More..." />
-      <ComboBox fx:id="cbbCategory" layoutX="83.0" layoutY="96.0" prefWidth="150.0" />
+      <ComboBox fx:id="cbbCategory" editable="true" layoutX="83.0" layoutY="96.0" prefWidth="150.0" />
       <TextField fx:id="txtTime" layoutX="84.0" layoutY="131.0" />
-      <TextField fx:id="txtFile" layoutX="84.0" layoutY="167.0" prefHeight="25.0" prefWidth="282.0" />
+      <TextField fx:id="txtFile" editable="false" layoutX="84.0" layoutY="167.0" prefHeight="25.0" prefWidth="150.0" />
       <TextField fx:id="txtArtist" layoutX="84.0" layoutY="61.0" prefHeight="25.0" prefWidth="282.0" />
       <TextField fx:id="txtTitle" layoutX="84.0" layoutY="26.0" prefHeight="25.0" prefWidth="282.0" />
       <Label alignment="CENTER_RIGHT" layoutY="100.0" prefHeight="17.0" prefWidth="72.0" text="Category:" textAlignment="RIGHT" />
@@ -22,5 +21,7 @@
       <Label alignment="CENTER_RIGHT" layoutY="171.0" prefHeight="17.0" prefWidth="72.0" text="File:" textAlignment="RIGHT" />
       <Label alignment="CENTER_RIGHT" layoutY="65.0" prefHeight="17.0" prefWidth="72.0" text="Artist:" textAlignment="RIGHT" />
       <Label alignment="CENTER_RIGHT" layoutY="30.0" prefHeight="17.0" prefWidth="72.0" text="Title:" textAlignment="RIGHT" />
+      <Button fx:id="btnMP3" layoutX="263.0" layoutY="167.0" mnemonicParsing="false" onAction="#onMP3Pressed" text="MP3" />
+      <Button fx:id="btnWAV" layoutX="334.0" layoutY="167.0" mnemonicParsing="false" onAction="#onWAVPressed" text="WAV" />
    </children>
 </AnchorPane>
