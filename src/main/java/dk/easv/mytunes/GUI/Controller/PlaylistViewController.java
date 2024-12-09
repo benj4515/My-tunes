@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.sql.*;
@@ -23,10 +24,10 @@ public class PlaylistViewController {
     @FXML
     private TableColumn<MyTunes, String> colCategory;
     @FXML
-    private ListView<String> lstSelectedSongs;
+    private ListView<MyTunes> lstSelectedSongs;
 
     private ObservableList<MyTunes> availableSongs = FXCollections.observableArrayList();
-    private ObservableList<String> selectedSongs = FXCollections.observableArrayList();
+    private ObservableList<MyTunes> selectedSongs = FXCollections.observableArrayList();
 
     private MyTunesModel myTunesModel;
 
@@ -37,9 +38,9 @@ public class PlaylistViewController {
 
     @FXML
     public void initialize() {
-        colTitle.setCellValueFactory(data -> data.getValue().titleProperty());
-        colArtist.setCellValueFactory(data -> data.getValue().artistProperty());
-        colCategory.setCellValueFactory(data -> data.getValue().categoryProperty());
+        colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
+        colArtist.setCellValueFactory(new PropertyValueFactory<>("artist"));
+        colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
 
         tblAvailableSongs.setItems(availableSongs);
         lstSelectedSongs.setItems(selectedSongs);
@@ -57,13 +58,13 @@ public class PlaylistViewController {
     private void onAddSong() {
         MyTunes selectedSong = tblAvailableSongs.getSelectionModel().getSelectedItem();
         if (selectedSong != null && !selectedSongs.contains(selectedSong.getTitle())) {
-            selectedSongs.add(selectedSong.getTitle());
+            selectedSongs.add(selectedSong);
         }
     }
 
     @FXML
     private void onRemoveSong() {
-        String selectedSong = lstSelectedSongs.getSelectionModel().getSelectedItem();
+        MyTunes selectedSong = lstSelectedSongs.getSelectionModel().getSelectedItem();
         if (selectedSong != null) {
             selectedSongs.remove(selectedSong);
         }

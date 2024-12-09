@@ -125,6 +125,8 @@ public class MyTunesDAO implements ISongDataAccess {
         String insertPlaylistSongs = "INSERT INTO dbo.PlaylistSongs (PlaylistId, IdSong, SongName) VALUES (?, ?, ?)";
 
         try (Connection conn = dbConnector.getConnection()) {
+            conn.setAutoCommit(false); // Start transaction
+
             int playlistId;
             try (PreparedStatement stmt = conn.prepareStatement(insertPlaylist, Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setString(1, playlistName);
@@ -148,6 +150,8 @@ public class MyTunesDAO implements ISongDataAccess {
                 }
                 stmt.executeBatch();
             }
+
+            conn.commit(); // Commit transaction
         } catch (SQLException ex) {
             ex.printStackTrace();
             throw new Exception("Could not create playlist", ex);

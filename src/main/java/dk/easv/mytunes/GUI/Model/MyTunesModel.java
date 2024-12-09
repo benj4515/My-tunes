@@ -78,7 +78,7 @@ public class MyTunesModel {
         songsToBeViewed.clear();
         songsToBeViewed.addAll(myTunesManager.getAllSongs());
     }
-    public void createPlaylist(String playlistName, ObservableList<String> selectedSongs) throws Exception {
+    public void createPlaylist(String playlistName, ObservableList<MyTunes> selectedSongs) throws Exception {
         myTunesManager.createPlaylist(playlistName, selectedSongs);
     }
 
