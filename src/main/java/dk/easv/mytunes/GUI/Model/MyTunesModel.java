@@ -78,4 +78,17 @@ public class MyTunesModel {
         songsToBeViewed.clear();
         songsToBeViewed.addAll(myTunesManager.getAllSongs());
     }
+    public void createPlaylist(String playlistName, ObservableList<MyTunes> selectedSongs) throws Exception {
+        myTunesManager.createPlaylist(playlistName, selectedSongs);
+    }
+
+    public ObservableList<MyTunes> getSongsForPlaylist(int playlistId) throws Exception {
+        List<MyTunes> playlistSongs = myTunesManager.getSongsForPlaylist(playlistId);
+        return FXCollections.observableArrayList(playlistSongs);
+    }
+
+    public ObservableList<MyTunes> getAllPlaylists() throws Exception {
+        List<MyTunes> playlists = myTunesManager.getAllPlaylists();
+        return FXCollections.observableArrayList(playlists);
+    }
 }

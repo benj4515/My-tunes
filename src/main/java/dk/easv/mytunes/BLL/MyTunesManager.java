@@ -38,4 +38,15 @@ public class MyTunesManager {
     public void updateSong(MyTunes updatedSong) throws Exception {
         songsDAO.updateSong(updatedSong);
     }
+    public void createPlaylist(String playlistName, List<MyTunes> selectedSongs) throws Exception {
+        songsDAO.createPlaylist(playlistName, selectedSongs);
+    }
+
+    public List<MyTunes> getAllPlaylists() throws Exception {
+        return songsDAO.getAllPlaylists();
+    }
+
+    public List<MyTunes> getSongsForPlaylist(int playlistId) throws Exception {
+        return songsDAO.getSongsForPlaylist(playlistId);
+    }
 }

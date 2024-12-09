@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mytunes.GUI.Controller.PlaylistViewController">
+    <children>
+        <Label layoutX="20.0" layoutY="10.0" text="Create New Playlist" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+        <Label layoutX="20.0" layoutY="50.0" text="Playlist Name:" />
+        <TextField fx:id="playlistNameField" layoutX="120.0" layoutY="45.0" prefWidth="200.0" promptText="Enter playlist name" />
+        <Label layoutX="20.0" layoutY="90.0" text="Available Songs:" />
+        <TableView fx:id="tblAvailableSongs" layoutX="20.0" layoutY="110.0" prefHeight="150.0" prefWidth="560.0">
+            <columns>
+                <TableColumn fx:id="colTitle" text="Title" prefWidth="200.0" />
+                <TableColumn fx:id="colArtist" text="Artist" prefWidth="200.0" />
+                <TableColumn fx:id="colCategory" text="Category" prefWidth="150.0" />
+            </columns>
+        </TableView>
+        <Button layoutX="20.0" layoutY="270.0" text="Add Song" onAction="#onAddSong" />
+        <Button layoutX="100.0" layoutY="270.0" text="Remove Song" onAction="#onRemoveSong" />
+        <Label layoutX="20.0" layoutY="310.0" text="Selected Songs:" />
+        <ListView fx:id="lstSelectedSongs" layoutX="20.0" layoutY="330.0" prefHeight="120.0" prefWidth="560.0" />
+        <Button layoutX="480.0" layoutY="460.0" text="Save Playlist" onAction="#onSavePlaylist" />
+        <Button layoutX="380.0" layoutY="460.0" text="Cancel" onAction="#onCancel" />
+    </children>
+</AnchorPane>

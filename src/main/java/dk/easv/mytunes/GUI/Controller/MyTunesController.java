@@ -261,6 +261,21 @@ public class MyTunesController implements Initializable {
         tblSongs.setItems(currentSongs); // Reset the items
         tblSongs.refresh(); // Refresh the table
     }
+    @FXML
+    private void onNewPlaylistPressed(ActionEvent actionEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/PlaylistView.fxml"));
+        Parent root = fxmlLoader.load();
+
+        PlaylistViewController playlistController = fxmlLoader.getController();
+
+        playlistController.setMyTunesModel(myTunesModel);
+
+        Stage stage = new Stage();
+        stage.setTitle("Create New Playlist");
+        stage.setScene(new Scene(root));
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+    }
 
 
     
