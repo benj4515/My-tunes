@@ -74,7 +74,7 @@
                   </TableView>
                   <AnchorPane prefHeight="50.0" prefWidth="205.0">
                      <children>
-                        <Button layoutY="13.0" mnemonicParsing="false" prefWidth="55.0" style="-fx-background-color: gray; -fx-background-radius: 10;" text="New" />
+                        <Button fx:id="btnNewPlaylist" layoutY="13.0" mnemonicParsing="false" prefWidth="55.0" style="-fx-background-color: gray; -fx-background-radius: 10;" text="New" onAction="#onNewPlaylistPressed" />
                         <Button layoutX="73.0" layoutY="13.0" mnemonicParsing="false" prefWidth="55.0" style="-fx-background-color: gray; -fx-background-radius: 10;" text="Edit" />
                         <Button layoutX="145.0" layoutY="13.0" mnemonicParsing="false" prefWidth="55.0" style="-fx-background-color: gray; -fx-background-radius: 10;" text="Delete" />
                      </children>

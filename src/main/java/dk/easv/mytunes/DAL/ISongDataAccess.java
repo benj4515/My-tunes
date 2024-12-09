@@ -10,4 +10,7 @@ public interface ISongDataAccess {
     MyTunes createSong(MyTunes newSong) throws Exception;
     void deleteSong(MyTunes myTunes) throws Exception;
     void updateSong(MyTunes myTunes) throws Exception;
+    void createPlaylist(String playlistName, List<MyTunes> selectedSongs) throws Exception;
+    List<MyTunes> getAllPlaylists() throws Exception;
+    List<MyTunes> getSongsForPlaylist(int playlistId) throws Exception;
 }

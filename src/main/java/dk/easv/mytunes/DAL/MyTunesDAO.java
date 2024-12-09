@@ -120,4 +120,88 @@ public class MyTunesDAO implements ISongDataAccess {
             throw new Exception("Could not delete song", ex);
         }
     }
+    public void createPlaylist(String playlistName, List<MyTunes> selectedSongs) throws Exception {
+        String insertPlaylist = "INSERT INTO dbo.Playlist (PlaylistName) VALUES (?)";
+        String insertPlaylistSongs = "INSERT INTO dbo.PlaylistSongs (PlaylistId, IdSong, SongName) VALUES (?, ?, ?)";
+
+        try (Connection conn = dbConnector.getConnection()) {
+            int playlistId;
+            try (PreparedStatement stmt = conn.prepareStatement(insertPlaylist, Statement.RETURN_GENERATED_KEYS)) {
+                stmt.setString(1, playlistName);
+                stmt.executeUpdate();
+
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        playlistId = rs.getInt(1);
+                    } else {
+                        throw new SQLException("Failed to retrieve generated Playlist ID.");
+                    }
+                }
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(insertPlaylistSongs)) {
+                for (MyTunes song : selectedSongs) {
+                    stmt.setInt(1, playlistId);
+                    stmt.setInt(2, song.getId());
+                    stmt.setString(3, song.getTitle());
+                    stmt.addBatch();
+                }
+                stmt.executeBatch();
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new Exception("Could not create playlist", ex);
+        }
+    }
+
+    public List<MyTunes> getAllPlaylists() throws Exception {
+        String query = "SELECT * FROM dbo.Playlist";
+        List<MyTunes> playlists = new ArrayList<>();
+
+        try (Connection conn = dbConnector.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                int id = rs.getInt("Id");
+                String name = rs.getString("PlaylistName");
+                playlists.add(new MyTunes(id, name, null, null, null, 0)); // Adjust constructor if needed
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new Exception("Could not fetch playlists", ex);
+        }
+        return playlists;
+    }
+
+    public List<MyTunes> getSongsForPlaylist(int playlistId) throws Exception {
+        String query = "SELECT s.Id, s.Title, s.Artist, s.Category, s.Address, s.Time " +
+                "FROM dbo.Songs s " +
+                "JOIN dbo.PlaylistSongs ps ON s.Id = ps.IdSong " +
+                "WHERE ps.PlaylistId = ?";
+        List<MyTunes> songs = new ArrayList<>();
+
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, playlistId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("Id");
+                    String title = rs.getString("Title");
+                    String artist = rs.getString("Artist");
+                    String category = rs.getString("Category");
+                    String address = rs.getString("Address");
+                    int time = rs.getInt("Time");
+
+                    songs.add(new MyTunes(id, title, artist, category, address, time));
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new Exception("Could not fetch songs for playlist", ex);
+        }
+        return songs;
+    }
+
 }
