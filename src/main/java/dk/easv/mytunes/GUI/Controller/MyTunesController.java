@@ -32,6 +32,7 @@ public class MyTunesController implements Initializable {
     public Button btnNewSong;
     public Button btnEditSong;
     public TextField txtSearch;
+    public Slider sldSongSlider;
 
     @FXML
     private TableView<MyTunes> tblSongs;
@@ -113,6 +114,28 @@ public class MyTunesController implements Initializable {
                 e.printStackTrace();
             }
         });
+
+        // Disable the slider initially
+        sldSongSlider.setDisable(true);
+
+        // Add listener to the slider to seek the song
+        sldSongSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (sldSongSlider.isValueChanging() && mediaPlayer != null) {
+                // Convert slider value to seconds and seek the media player
+                mediaPlayer.seek(Duration.seconds(newValue.doubleValue()));
+            }
+        });
+
+        // Add mouse click listener to the slider
+        sldSongSlider.setOnMouseClicked(event -> {
+            if (mediaPlayer != null) {
+                // Calculate the new time based on the mouse click position
+                double mouseX = event.getX();
+                double sliderWidth = sldSongSlider.getWidth();
+                double newTime = (mouseX / sliderWidth) * sldSongSlider.getMax();
+                mediaPlayer.seek(Duration.seconds(newTime));
+            }
+        });
     }
 
     public MyTunes getSelectedSong() {
@@ -146,9 +169,18 @@ public class MyTunesController implements Initializable {
                 }
                 Media pick = new Media(new File("src/main/resources/" + selectedSong.getAddress()).toURI().toString());
                 mediaPlayer = new MediaPlayer(pick);
+                mediaPlayer.setOnReady(() -> {
+                    sldSongSlider.setMax(mediaPlayer.getMedia().getDuration().toSeconds());
+                    sldSongSlider.setDisable(false); // Enable the slider when the song is ready
+                });
+                mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+                    if (!sldSongSlider.isValueChanging()) {
+                        sldSongSlider.setValue(newValue.toSeconds());
+                    }
+                });
                 mediaPlayer.play();
                 System.out.println("Playing music: " + selectedSong.getTitle());
-                lblPlayingSong.setText("Playing: " + selectedSong.getTitle());
+                lblPlayingSong.setText("Playing: " + selectedSong.getTitle() + " by " + selectedSong.getArtist());
             } catch (MediaException e) {
                 displayError(e);
                 System.out.println("Error playing media: " + e.getMessage());
@@ -157,6 +189,7 @@ public class MyTunesController implements Initializable {
         } else {
             System.out.println("No song selected");
             lblPlayingSong.setText("No song selected");
+            sldSongSlider.setDisable(true); // Disable the slider when no song is selected
         }
     }
 

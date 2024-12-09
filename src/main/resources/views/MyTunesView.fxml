@@ -45,19 +45,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.media.MediaView?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="538.0" prefWidth="886.0" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mytunes.GUI.Controller.MyTunesController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="589.0" prefWidth="886.0" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mytunes.GUI.Controller.MyTunesController">
    <children>
-      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="102.0" prefWidth="886.0" style="-fx-background-color: #000000;">
+      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="83.0" prefWidth="886.0" style="-fx-background-color: #000000;">
          <children>
-            <Button fx:id="btnPlay" layoutX="93.0" layoutY="6.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onPlayButtonPressed" prefHeight="50.0" prefWidth="50.0" style="-fx-background-radius: 30; -fx-background-color: gray;" text="Play" />
-            <Button fx:id="btnLast" layoutX="49.0" layoutY="11.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onLastButtonPressed" prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 30; -fx-background-color: gray;" text="Last" />
-            <Button fx:id="btnNext" layoutX="148.0" layoutY="11.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onNextButtonPressed" prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 30; -fx-background-color: gray;" text="Next" />
-            <Slider layoutX="57.0" layoutY="57.0" />
-            <Button layoutX="26.0" layoutY="51.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="28.0" text="Button" />
-            <Label fx:id="lblPlayingSong" layoutX="397.0" layoutY="42.0" text="No song selected" textFill="WHITE" />
-            <TextField fx:id="txtSearch" layoutX="691.0" layoutY="24.0" prefHeight="26.0" prefWidth="84.0" promptText="Search..." style="-fx-background-color: gray; -fx-background-radius: 10;" />
-            <Button layoutX="775.0" layoutY="24.0" mnemonicParsing="false" style="-fx-background-color: gray; -fx-background-radius: 10;" text="Filter" />
-            <MediaView fx:id="mediaViewThing" fitHeight="200.0" fitWidth="200.0" layoutX="204.0" layoutY="-49.0" />
+            <Label fx:id="lblPlayingSong" layoutX="156.0" layoutY="33.0" text="No song selected" textFill="WHITE" />
+            <TextField fx:id="txtSearch" layoutX="704.0" layoutY="29.0" prefHeight="26.0" prefWidth="140.0" promptText="Search..." style="-fx-background-color: gray; -fx-background-radius: 10;" />
+            <MediaView fx:id="mediaViewThing" fitHeight="80.0" fitWidth="80.0" layoutX="25.0" layoutY="3.0" />
          </children>
       </AnchorPane>
       <HBox prefHeight="420.0" prefWidth="835.0" spacing="10.0" style="-fx-background-color: #212121; -fx-background-radius: 10;">
@@ -128,5 +122,13 @@
             <Insets left="10.0" right="10.0" />
          </VBox.margin>
       </HBox>
+      <AnchorPane prefHeight="86.0" prefWidth="886.0">
+         <children>
+            <Button fx:id="btnPlay" layoutX="418.0" layoutY="8.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onPlayButtonPressed" prefHeight="50.0" prefWidth="50.0" style="-fx-background-radius: 30; -fx-background-color: gray;" text="Play" />
+            <Button fx:id="btnLast" layoutX="374.0" layoutY="15.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onLastButtonPressed" prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 30; -fx-background-color: gray;" text="Last" />
+            <Button fx:id="btnNext" layoutX="473.0" layoutY="15.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onNextButtonPressed" prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 30; -fx-background-color: gray;" text="Next" />
+            <Slider fx:id="sldSongSlider" layoutX="324.0" layoutY="65.0" prefHeight="14.0" prefWidth="239.0" />
+         </children>
+      </AnchorPane>
    </children>
 </VBox>
