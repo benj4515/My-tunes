@@ -10,8 +10,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
-import java.sql.*;
-
 public class PlaylistViewController {
 
     @FXML
@@ -27,8 +25,8 @@ public class PlaylistViewController {
     @FXML
     private ListView<MyTunes> lstSelectedSongs;
 
-    private ObservableList<MyTunes> availableSongs = FXCollections.observableArrayList();
-    private ObservableList<MyTunes> selectedSongs = FXCollections.observableArrayList();
+    private final ObservableList<MyTunes> availableSongs = FXCollections.observableArrayList();
+    private final ObservableList<MyTunes> selectedSongs = FXCollections.observableArrayList();
 
     private MyTunesModel myTunesModel;
     private MyTunesController myTunesController;

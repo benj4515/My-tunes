@@ -12,8 +12,8 @@ import java.util.List;
 
 public class MyTunesManager {
 
-    private ISongDataAccess songsDAO;
-    private SongSearcher songSearcher = new SongSearcher();
+    private final ISongDataAccess songsDAO;
+    private final SongSearcher songSearcher = new SongSearcher();
 
     public MyTunesManager() throws IOException {
         songsDAO = new MyTunesDAO();
@@ -25,8 +25,7 @@ public class MyTunesManager {
 
     public List<MyTunes> searchSongs(String query) throws Exception {
         List<MyTunes> allSongs = getAllSongs();
-        List<MyTunes> searchResult = songSearcher.search(allSongs, query);
-        return searchResult;
+        return songSearcher.search(allSongs, query);
     }
 
     public MyTunes createSong(MyTunes newSong) throws Exception {
@@ -40,6 +39,7 @@ public class MyTunesManager {
     public void updateSong(MyTunes updatedSong) throws Exception {
         songsDAO.updateSong(updatedSong);
     }
+
     public void createPlaylist(String playlistName, List<MyTunes> selectedSongs) throws Exception {
         songsDAO.createPlaylist(playlistName, selectedSongs);
     }

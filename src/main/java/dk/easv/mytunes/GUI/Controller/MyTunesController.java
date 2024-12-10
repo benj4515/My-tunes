@@ -5,7 +5,6 @@ import dk.easv.mytunes.BE.Playlist;
 import dk.easv.mytunes.GUI.Model.MyTunesModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -72,6 +71,7 @@ public class MyTunesController implements Initializable {
 
     public MyTunesController() {
 
+        // makes new mytunesmodel object
         try {
             myTunesModel = new MyTunesModel();
         } catch (Exception e) {
@@ -82,6 +82,7 @@ public class MyTunesController implements Initializable {
 
     private void displayError(Throwable t) {
 
+        // displays if any error occours 
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText(t.getMessage());
@@ -110,7 +111,7 @@ public class MyTunesController implements Initializable {
         tblSongs.setItems(myTunesModel.getObservableSongs());
 
         // table view listener (when user selects a song in the tableview)
-        tblSongs.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        tblSongs.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> {
             if (newValue != null) {
                 selectedSong = newValue; // Set the selected song
                 System.out.println("Selected song: " + selectedSong.getAddress());
@@ -118,11 +119,11 @@ public class MyTunesController implements Initializable {
             }
         });
 
-        tblPlaylists.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        tblPlaylists.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> {
             if (newValue != null) {
                 try {
                     lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(newValue));
-                    lstSongsOnList.getSelectionModel().selectedItemProperty().addListener((obs, oldSong, newSong) -> {
+                    lstSongsOnList.getSelectionModel().selectedItemProperty().addListener((_, _, newSong) -> {
                         if (newSong != null) {
                             selectedSong = (MyTunes) newSong; // Set the selected song from the playlist
                             System.out.println("Selected song from playlist: " + selectedSong.getAddress());
@@ -135,7 +136,7 @@ public class MyTunesController implements Initializable {
             }
         });
 
-        tblPlaylists.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        tblPlaylists.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> {
             if (newValue != null) {
                 try {
                     lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(newValue));
@@ -145,7 +146,7 @@ public class MyTunesController implements Initializable {
             }
         });
 
-        txtSearch.textProperty().addListener((observableValue, oldValue, newValue) -> {
+        txtSearch.textProperty().addListener((_, _, newValue) -> {
             try {
                 myTunesModel.searchSong(newValue);
             } catch (Exception e) {
@@ -158,7 +159,7 @@ public class MyTunesController implements Initializable {
         sldSongSlider.setDisable(true);
 
         // Add listener to the slider to seek the song
-        sldSongSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+        sldSongSlider.valueProperty().addListener((_, _, newValue) -> {
             if (sldSongSlider.isValueChanging() && mediaPlayer != null) {
                 // Convert slider value to seconds and seek the media player
                 mediaPlayer.seek(Duration.seconds(newValue.doubleValue()));
@@ -176,11 +177,11 @@ public class MyTunesController implements Initializable {
             }
         });
 
-        tblPlaylists.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        tblPlaylists.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> {
             if (newValue != null) {
                 try {
                     lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(newValue));
-                    lstSongsOnList.getSelectionModel().selectedItemProperty().addListener((obs, oldSong, newSong) -> {
+                    lstSongsOnList.getSelectionModel().selectedItemProperty().addListener((_, _, newSong) -> {
                         if (newSong != null) {
                             selectedSong = (MyTunes) newSong; // Set the selected song from the playlist
                             System.out.println("Selected song from playlist: " + selectedSong.getAddress());
@@ -201,7 +202,7 @@ public class MyTunesController implements Initializable {
     }
 
     @FXML
-    private void onPlayButtonPressed(ActionEvent actionEvent) {
+    private void onPlayButtonPressed() {
         if (selectedSong != null) {
             if (mediaPlayer == null || !mediaPlayer.getMedia().getSource().equals(new File("src/main/resources/" + selectedSong.getAddress()).toURI().toString())) {
                 playSong();
@@ -234,7 +235,7 @@ public class MyTunesController implements Initializable {
                     sldSongSlider.setMax(mediaPlayer.getMedia().getDuration().toSeconds());
                     sldSongSlider.setDisable(false); // Enable the slider when the song is ready
                 });
-                mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+                mediaPlayer.currentTimeProperty().addListener((_, _, newValue) -> {
                     if (!sldSongSlider.isValueChanging()) {
                         sldSongSlider.setValue(newValue.toSeconds());
                     }
@@ -277,7 +278,7 @@ public class MyTunesController implements Initializable {
     }
 
     @FXML
-    private void onLastButtonPressed(ActionEvent actionEvent) {
+    private void onLastButtonPressed() {
         if (lstSongsOnList.getSelectionModel().getSelectedItem() != null) {
             int currentIndex = lstSongsOnList.getSelectionModel().getSelectedIndex();
             if (currentIndex > 0) {
@@ -299,7 +300,7 @@ public class MyTunesController implements Initializable {
     }
 
     @FXML
-    private void onNextButtonPressed(ActionEvent actionEvent) {
+    private void onNextButtonPressed() {
         if (lstSongsOnList.getSelectionModel().getSelectedItem() != null) {
             int currentIndex = lstSongsOnList.getSelectionModel().getSelectedIndex();
             if (currentIndex < lstSongsOnList.getItems().size() - 1) {
@@ -321,7 +322,7 @@ public class MyTunesController implements Initializable {
     }
 
     @FXML
-    private void onNewSongButtonPressed(ActionEvent actionEvent) throws IOException {
+    private void onNewSongButtonPressed() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/NewSongView.fxml"));
         Parent root = fxmlLoader.load();
 
@@ -337,7 +338,7 @@ public class MyTunesController implements Initializable {
     }
 
     @FXML
-    private void onEditSongButtonPressed(ActionEvent actionEvent) throws Exception {
+    private void onEditSongButtonPressed() throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/EditSongView.fxml"));
         Parent root = fxmlLoader.load();
 
@@ -351,9 +352,9 @@ public class MyTunesController implements Initializable {
         stage.initModality(Modality.APPLICATION_MODAL); // Optional: makes the new window modal
         stage.show();
     }
-        
+
     @FXML
-    private void onDeleteSongButtonPressed(ActionEvent actionEvent) throws Exception {
+    private void onDeleteSongButtonPressed() throws Exception {
         // Show a confirmation dialog
         int answer = JOptionPane.showConfirmDialog(null, "Are you sure?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
 
@@ -371,7 +372,6 @@ public class MyTunesController implements Initializable {
             }
         }
     }
-
 
 
     public void tableRefresh() {
@@ -397,7 +397,7 @@ public class MyTunesController implements Initializable {
     }
 
     @FXML
-    private void onNewPlaylistPressed(ActionEvent actionEvent) throws IOException {
+    private void onNewPlaylistPressed() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/PlaylistView.fxml"));
         Parent root = fxmlLoader.load();
 
@@ -414,7 +414,7 @@ public class MyTunesController implements Initializable {
 
 
     @FXML
-    private void onDeleteSongOnPlaylistPressed(ActionEvent actionEvent) throws Exception {
+    private void onDeleteSongOnPlaylistPressed() {
         MyTunes selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
         Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
 
@@ -430,7 +430,7 @@ public class MyTunesController implements Initializable {
         }
     }
 
-    public void onDeletePlaylistPressed(ActionEvent actionEvent) throws Exception {
+    public void onDeletePlaylistPressed() throws Exception {
         Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
 
         if (selectedPlaylist != null) {
@@ -442,7 +442,7 @@ public class MyTunesController implements Initializable {
     }
 
     @FXML
-    private void onEditPlaylistPressed(ActionEvent actionEvent) throws Exception {
+    private void onEditPlaylistPressed() throws Exception {
         Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
 
         if (selectedPlaylist != null) {
@@ -465,7 +465,7 @@ public class MyTunesController implements Initializable {
     }
 
     @FXML
-    private void onMoveSongUpPressed(ActionEvent actionEvent) {
+    private void onMoveSongUpPressed() {
         MyTunes selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
         Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
 
@@ -482,7 +482,7 @@ public class MyTunesController implements Initializable {
     }
 
     @FXML
-    private void onMoveSongDownPressed(ActionEvent actionEvent) {
+    private void onMoveSongDownPressed() {
         MyTunes selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
         Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
 
@@ -498,7 +498,7 @@ public class MyTunesController implements Initializable {
         }
     }
 
-    public void onMoveToPlaylistPressed(ActionEvent actionEvent) {
+    public void onMoveToPlaylistPressed() {
         MyTunes selectedSong = tblSongs.getSelectionModel().getSelectedItem();
         Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
 

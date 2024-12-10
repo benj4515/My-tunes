@@ -2,7 +2,6 @@ package dk.easv.mytunes.GUI.Controller;
 
 import dk.easv.mytunes.BE.MyTunes;
 import dk.easv.mytunes.GUI.Model.MyTunesModel;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -13,24 +12,15 @@ import javafx.stage.Stage;
 public class NewSongController {
 
     @FXML
-    private Button btnSave, btnWaV, btnMP3, btnChooseFile, btnCategoryMore;
-
-    @FXML
-    private Button btnCancel;
-
-    @FXML
     public ComboBox<String> cbbCategory;
-
     @FXML
     public TextField txtTime, txtFile, txtArtist, txtTitle;
+    @FXML
+    private Button btnSave;
 
     private MyTunesModel myTunesModel;
 
     private MyTunesController myTunesController;
-
-    public void setMyTunesController(MyTunesController myTunesController) {
-        this.myTunesController = myTunesController;
-    }
 
     public NewSongController() {
 
@@ -42,6 +32,10 @@ public class NewSongController {
         }
     }
 
+    public void setMyTunesController(MyTunesController myTunesController) {
+        this.myTunesController = myTunesController;
+    }
+
     @FXML
     private void initialize() {
         cbbCategory.getItems().addAll(
@@ -51,12 +45,10 @@ public class NewSongController {
         cbbCategory.setEditable(true);
 
         // Add listener
-        txtTitle.textProperty().addListener((observable, oldValue, newValue) -> {
-            txtFile.setText("Music/" + newValue);
-        });
+        txtTitle.textProperty().addListener((_, _, newValue) -> txtFile.setText("Music/" + newValue));
     }
-    private void displayError(Throwable t)
-    {
+
+    private void displayError(Throwable t) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Something went wrong");
         alert.setHeaderText(t.getMessage());
@@ -64,7 +56,7 @@ public class NewSongController {
     }
 
     @FXML
-    public void onCreate(ActionEvent actionEvent) throws Exception {
+    public void onCreate() throws Exception {
         // Getting data from ui
         String title = txtTitle.getText();
         String artist = txtArtist.getText();
@@ -78,7 +70,7 @@ public class NewSongController {
         }
 
         // new song object
-        MyTunes newSong = new MyTunes(-1,title, artist, category, address, time);
+        MyTunes newSong = new MyTunes(-1, title, artist, category, address, time);
 
         // call model to create song in the dal
         myTunesModel.createSong(newSong);
@@ -92,13 +84,14 @@ public class NewSongController {
         Stage stage = (Stage) btnSave.getScene().getWindow();
         stage.close();
     }
+
     @FXML
-    public void onCancelButtonPressed(ActionEvent actionEvent) {
+    public void onCancelButtonPressed() {
         Stage stage = (Stage) btnSave.getScene().getWindow();
         stage.close();
     }
 
-    public void onMP3Pressed(ActionEvent actionEvent) {
+    public void onMP3Pressed() {
         String currentText = txtFile.getText();
         if (currentText.toLowerCase().endsWith(".wav")) {
             currentText = currentText.substring(0, currentText.lastIndexOf('.')) + ".mp3";
@@ -108,7 +101,7 @@ public class NewSongController {
         txtFile.setText(currentText);
     }
 
-    public void onWAVPressed(ActionEvent actionEvent) {
+    public void onWAVPressed() {
         String currentText = txtFile.getText();
         if (currentText.toLowerCase().endsWith(".mp3")) {
             currentText = currentText.substring(0, currentText.lastIndexOf('.')) + ".wav";

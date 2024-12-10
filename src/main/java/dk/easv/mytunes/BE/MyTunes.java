@@ -2,7 +2,7 @@ package dk.easv.mytunes.BE;
 
 public class MyTunes {
 
-    private int id;
+    private final int id;
     private String title;
     private String artist;
     private String category;

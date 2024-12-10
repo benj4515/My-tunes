@@ -1,7 +1,7 @@
 package dk.easv.mytunes.BE;
 
 public class Playlist {
-    private int id;
+    private final int id;
     private String name;
 
 
@@ -12,10 +12,6 @@ public class Playlist {
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {

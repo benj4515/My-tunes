@@ -11,11 +11,11 @@ import java.util.List;
 
 public class MyTunesModel {
 
-    private ObservableList<MyTunes> songsToBeViewed;
+    private final ObservableList<MyTunes> songsToBeViewed;
 
-    private MyTunesManager myTunesManager;
+    private final MyTunesManager myTunesManager;
 
-    private MyTunesDAO myTunesDAO = new MyTunesDAO();
+    private final MyTunesDAO myTunesDAO = new MyTunesDAO();
 
     public MyTunesModel() throws Exception {
         myTunesManager = new MyTunesManager();
@@ -33,17 +33,17 @@ public class MyTunesModel {
         songsToBeViewed.addAll(searchResults);
     }
 
-    public MyTunes createSong(MyTunes newSong) throws Exception {
+    public void createSong(MyTunes newSong) throws Exception {
         MyTunes songCreated = myTunesManager.createSong(newSong);
         songsToBeViewed.add(songCreated);
         System.out.println("Song added to ObservableList" + songCreated);
-        return songCreated;
     }
+
     public void updateSong(MyTunes updatedSong) throws Exception {
         try {
             // Update song in DAL layer (through the layers)
             myTunesManager.updateSong(updatedSong);
-            songsToBeViewed.add(updatedSong); // en fucking linje
+            songsToBeViewed.add(updatedSong);
 
             // Find the song in the observable list
             int index = songsToBeViewed.indexOf(updatedSong);
@@ -74,7 +74,7 @@ public class MyTunesModel {
         // delete song in DAL layer (through the layers)
         myTunesManager.deleteSong(selectedSong);
 
-        // remove from obervable list (and UI)
+        // remove from observable list (and UI)
         songsToBeViewed.remove(selectedSong);
     }
 
@@ -82,6 +82,7 @@ public class MyTunesModel {
         songsToBeViewed.clear();
         songsToBeViewed.addAll(myTunesManager.getAllSongs());
     }
+
     public void createPlaylist(String playlistName, ObservableList<MyTunes> selectedSongs) throws Exception {
         myTunesManager.createPlaylist(playlistName, selectedSongs);
     }
