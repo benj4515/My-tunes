@@ -373,8 +373,21 @@ public class MyTunesController implements Initializable {
     }
 
 
-    public void onDeleteSongOnPlaylistPressed(ActionEvent actionEvent) throws Exception {
-        System.out.println("onDeleteSongOnPlaylistPressed");
+    @FXML
+    private void onDeleteSongOnPlaylistPressed(ActionEvent actionEvent) throws Exception {
+        MyTunes selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
+        Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
+
+        if (selectedSong != null && selectedPlaylist != null) {
+            try {
+                myTunesModel.deleteSongFromPlaylist(selectedSong, selectedPlaylist);
+                lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(selectedPlaylist)); // Refresh the songs in the playlist
+            } catch (Exception e) {
+                displayError(e);
+            }
+        } else {
+            System.out.println("No song or playlist selected");
+        }
     }
 
     public void onDeletePlaylistPressed(ActionEvent actionEvent) throws Exception {
@@ -398,5 +411,18 @@ public class MyTunesController implements Initializable {
     }
 
     public void onMoveToPlaylistPressed(ActionEvent actionEvent) {
+        MyTunes selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+        Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
+
+        if (selectedSong != null && selectedPlaylist != null) {
+            try {
+                myTunesModel.addSongToPlaylist(selectedSong, selectedPlaylist);
+                lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(selectedPlaylist)); // Refresh the songs in the playlist
+            } catch (Exception e) {
+                displayError(e);
+            }
+        } else {
+            System.out.println("No song or playlist selected");
+        }
     }
 }

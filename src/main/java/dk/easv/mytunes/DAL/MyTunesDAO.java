@@ -121,20 +121,6 @@ public class MyTunesDAO implements ISongDataAccess {
         }
     }
 
-    public void deleteSongFromPlaylist(MyTunes song, int playlistId) throws Exception {
-        String sql = "DELETE FROM dbo.PlaylistSongs WHERE IdSong = ? AND PlaylistId = ?";
-        try (Connection conn = dbConnector.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, song.getId());
-            stmt.setInt(2, playlistId);
-
-            // Run the specified SQL statement
-            stmt.executeUpdate();
-        } catch (SQLException ex){
-            throw new Exception("Could not delete song from playlist", ex);
-        }
-    }
-
     public void createPlaylist(String playlistName, List<MyTunes> selectedSongs) throws Exception {
         String insertPlaylist = "INSERT INTO dbo.Playlist (PlaylistName) VALUES (?)";
         String insertPlaylistSongs = "INSERT INTO dbo.PlaylistSongs (PlaylistId, IdSong, SongName) VALUES (?, ?, ?)";
@@ -248,4 +234,34 @@ public class MyTunesDAO implements ISongDataAccess {
         return songs;
     }
 
+    // MyTunesDAO.java
+    // MyTunesDAO.java
+    public void addSongToPlaylist(MyTunes song, Playlist playlist) throws Exception {
+        String sql = "INSERT INTO dbo.PlaylistSongs (PlaylistId, IdSong, SongName) VALUES (?, ?, ?)";
+
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, playlist.getId());
+            stmt.setInt(2, song.getId());
+            stmt.setString(3, song.getTitle()); // Ensure SongName is set
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new Exception("Could not add song to playlist", ex);
+        }
+    }
+
+    public void deleteSongFromPlaylist(MyTunes song, int playlistId) throws Exception {
+        String sql = "DELETE FROM dbo.PlaylistSongs WHERE IdSong = ? AND PlaylistId = ?";
+
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, song.getId());
+            stmt.setInt(2, playlistId);
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new Exception("Could not delete song from playlist", ex);
+        }
+    }
 }

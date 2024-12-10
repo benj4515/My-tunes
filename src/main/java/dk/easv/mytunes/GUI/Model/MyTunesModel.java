@@ -99,4 +99,12 @@ public class MyTunesModel {
     public void deletePlaylist(Playlist playlist) throws Exception {
         myTunesDAO.deletePlaylist(playlist);
     }
+
+    public void addSongToPlaylist(MyTunes song, Playlist playlist) throws Exception {
+        myTunesDAO.addSongToPlaylist(song, playlist);
+    }
+
+    public void deleteSongFromPlaylist(MyTunes song, Playlist playlist) throws Exception {
+        myTunesDAO.deleteSongFromPlaylist(song, playlist.getId());
+    }
 }
