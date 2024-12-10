@@ -120,6 +120,21 @@ public class MyTunesDAO implements ISongDataAccess {
             throw new Exception("Could not delete song", ex);
         }
     }
+
+    public void deleteSongFromPlaylist(MyTunes song, int playlistId) throws Exception {
+        String sql = "DELETE FROM dbo.PlaylistSongs WHERE IdSong = ? AND PlaylistId = ?";
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, song.getId());
+            stmt.setInt(2, playlistId);
+
+            // Run the specified SQL statement
+            stmt.executeUpdate();
+        } catch (SQLException ex){
+            throw new Exception("Could not delete song from playlist", ex);
+        }
+    }
+
     public void createPlaylist(String playlistName, List<MyTunes> selectedSongs) throws Exception {
         String insertPlaylist = "INSERT INTO dbo.Playlist (PlaylistName) VALUES (?)";
         String insertPlaylistSongs = "INSERT INTO dbo.PlaylistSongs (PlaylistId, IdSong, SongName) VALUES (?, ?, ?)";
@@ -155,6 +170,31 @@ public class MyTunesDAO implements ISongDataAccess {
         } catch (SQLException ex) {
             ex.printStackTrace();
             throw new Exception("Could not create playlist", ex);
+        }
+    }
+
+    // MyTunesDAO.java
+    public void deletePlaylist(Playlist playlist) throws Exception {
+        String deletePlaylistSongs = "DELETE FROM dbo.PlaylistSongs WHERE PlaylistId = ?";
+        String deletePlaylist = "DELETE FROM dbo.Playlist WHERE Id = ?";
+
+        try (Connection conn = dbConnector.getConnection()) {
+            conn.setAutoCommit(false); // Start transaction
+
+            try (PreparedStatement stmt = conn.prepareStatement(deletePlaylistSongs)) {
+                stmt.setInt(1, playlist.getId());
+                stmt.executeUpdate();
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(deletePlaylist)) {
+                stmt.setInt(1, playlist.getId());
+                stmt.executeUpdate();
+            }
+
+            conn.commit(); // Commit transaction
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new Exception("Could not delete playlist", ex);
         }
     }
 

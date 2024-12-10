@@ -3,6 +3,7 @@ package dk.easv.mytunes.GUI.Model;
 import dk.easv.mytunes.BE.MyTunes;
 import dk.easv.mytunes.BE.Playlist;
 import dk.easv.mytunes.BLL.MyTunesManager;
+import dk.easv.mytunes.DAL.MyTunesDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -13,6 +14,8 @@ public class MyTunesModel {
     private ObservableList<MyTunes> songsToBeViewed;
 
     private MyTunesManager myTunesManager;
+
+    private MyTunesDAO myTunesDAO = new MyTunesDAO();
 
     public MyTunesModel() throws Exception {
         myTunesManager = new MyTunesManager();
@@ -91,5 +94,9 @@ public class MyTunesModel {
     public ObservableList<Playlist> getAllPlaylists() throws Exception {
         List<Playlist> playlists = myTunesManager.getAllPlaylists();
         return FXCollections.observableArrayList(playlists);
+    }
+
+    public void deletePlaylist(Playlist playlist) throws Exception {
+        myTunesDAO.deletePlaylist(playlist);
     }
 }

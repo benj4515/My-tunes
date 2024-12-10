@@ -36,6 +36,8 @@ public class MyTunesController implements Initializable {
     public Slider sldSongSlider;
     public ListView lstSongsOnList;
     public Button btnDeleteSong;
+    public Button btnDeleteSongOnPlaylist;
+    public Button btnDeletePlaylist;
 
     @FXML
     private TableView<Playlist> tblPlaylists;
@@ -231,7 +233,24 @@ public class MyTunesController implements Initializable {
                     }
                 });
                 mediaPlayer.setOnEndOfMedia(() -> {
-                    onNextButtonPressed(null);
+                    if (lstSongsOnList.getSelectionModel().getSelectedItem() != null) {
+                        int currentIndex = lstSongsOnList.getSelectionModel().getSelectedIndex();
+                        if (currentIndex < lstSongsOnList.getItems().size() - 1) {
+                            lstSongsOnList.getSelectionModel().selectNext();
+                        } else {
+                            lstSongsOnList.getSelectionModel().selectFirst();
+                        }
+                        selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
+                    } else {
+                        int currentIndex = tblSongs.getSelectionModel().getSelectedIndex();
+                        if (currentIndex < tblSongs.getItems().size() - 1) {
+                            tblSongs.getSelectionModel().selectNext();
+                        } else {
+                            tblSongs.getSelectionModel().selectFirst();
+                        }
+                        selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+                    }
+                    playSong();
                 });
                 mediaPlayer.play();
                 System.out.println("Playing music: " + selectedSong.getTitle());
@@ -354,5 +373,30 @@ public class MyTunesController implements Initializable {
     }
 
 
-    
+    public void onDeleteSongOnPlaylistPressed(ActionEvent actionEvent) throws Exception {
+        System.out.println("onDeleteSongOnPlaylistPressed");
+    }
+
+    public void onDeletePlaylistPressed(ActionEvent actionEvent) throws Exception {
+        Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
+
+        if (selectedPlaylist != null) {
+            myTunesModel.deletePlaylist(selectedPlaylist);
+            refreshPlaylists(); // Refresh the playlist table
+        } else {
+            System.out.println("No playlist selected");
+        }
+    }
+
+    public void onEditPlaylistPressed(ActionEvent actionEvent) {
+    }
+
+    public void onMoveSongUpPressed(ActionEvent actionEvent) {
+    }
+
+    public void onMoveSongDownPressed(ActionEvent actionEvent) {
+    }
+
+    public void onMoveToPlaylistPressed(ActionEvent actionEvent) {
+    }
 }
