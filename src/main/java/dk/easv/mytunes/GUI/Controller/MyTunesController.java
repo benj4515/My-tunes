@@ -3,6 +3,7 @@ package dk.easv.mytunes.GUI.Controller;
 import dk.easv.mytunes.BE.MyTunes;
 import dk.easv.mytunes.BE.Playlist;
 import dk.easv.mytunes.GUI.Model.MyTunesModel;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -35,6 +36,9 @@ public class MyTunesController implements Initializable {
     public TextField txtSearch;
     public Slider sldSongSlider;
     public ListView lstSongsOnList;
+    public Button btnDeleteSong;
+    public Button btnDeleteSongOnPlaylist;
+    public Button btnDeletePlaylist;
 
     @FXML
     private TableView<Playlist> tblPlaylists;
@@ -187,6 +191,25 @@ public class MyTunesController implements Initializable {
                 mediaPlayer.seek(Duration.seconds(newTime));
             }
         });
+
+        tblPlaylists.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                try {
+                    lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(newValue));
+                    lstSongsOnList.getSelectionModel().selectedItemProperty().addListener((obs, oldSong, newSong) -> {
+                        if (newSong != null) {
+                            selectedSong = (MyTunes) newSong; // Set the selected song from the playlist
+                            System.out.println("Selected song from playlist: " + selectedSong.getAddress());
+                            lblPlayingSong.setText("Selected: " + selectedSong.getTitle());
+                        }
+                    });
+                } catch (Exception e) {
+                    displayError(e);
+                }
+            } else {
+                lstSongsOnList.setItems(FXCollections.observableArrayList()); // Clear the list when no playlist is selected
+            }
+        });
     }
 
     public MyTunes getSelectedSong() {
@@ -230,7 +253,24 @@ public class MyTunesController implements Initializable {
                     }
                 });
                 mediaPlayer.setOnEndOfMedia(() -> {
-                    onNextButtonPressed(null);
+                    if (lstSongsOnList.getSelectionModel().getSelectedItem() != null) {
+                        int currentIndex = lstSongsOnList.getSelectionModel().getSelectedIndex();
+                        if (currentIndex < lstSongsOnList.getItems().size() - 1) {
+                            lstSongsOnList.getSelectionModel().selectNext();
+                        } else {
+                            lstSongsOnList.getSelectionModel().selectFirst();
+                        }
+                        selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
+                    } else {
+                        int currentIndex = tblSongs.getSelectionModel().getSelectedIndex();
+                        if (currentIndex < tblSongs.getItems().size() - 1) {
+                            tblSongs.getSelectionModel().selectNext();
+                        } else {
+                            tblSongs.getSelectionModel().selectFirst();
+                        }
+                        selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+                    }
+                    playSong();
                 });
                 mediaPlayer.play();
                 System.out.println("Playing music: " + selectedSong.getTitle());
@@ -250,10 +290,20 @@ public class MyTunesController implements Initializable {
     @FXML
     private void onLastButtonPressed(ActionEvent actionEvent) {
         if (lstSongsOnList.getSelectionModel().getSelectedItem() != null) {
-            lstSongsOnList.getSelectionModel().selectPrevious();
+            int currentIndex = lstSongsOnList.getSelectionModel().getSelectedIndex();
+            if (currentIndex > 0) {
+                lstSongsOnList.getSelectionModel().selectPrevious();
+            } else {
+                lstSongsOnList.getSelectionModel().selectLast();
+            }
             selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
         } else {
-            tblSongs.getSelectionModel().selectPrevious();
+            int currentIndex = tblSongs.getSelectionModel().getSelectedIndex();
+            if (currentIndex > 0) {
+                tblSongs.getSelectionModel().selectPrevious();
+            } else {
+                tblSongs.getSelectionModel().selectLast();
+            }
             selectedSong = tblSongs.getSelectionModel().getSelectedItem();
         }
         playSong();
@@ -262,10 +312,20 @@ public class MyTunesController implements Initializable {
     @FXML
     private void onNextButtonPressed(ActionEvent actionEvent) {
         if (lstSongsOnList.getSelectionModel().getSelectedItem() != null) {
-            lstSongsOnList.getSelectionModel().selectNext();
+            int currentIndex = lstSongsOnList.getSelectionModel().getSelectedIndex();
+            if (currentIndex < lstSongsOnList.getItems().size() - 1) {
+                lstSongsOnList.getSelectionModel().selectNext();
+            } else {
+                lstSongsOnList.getSelectionModel().selectFirst();
+            }
             selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
         } else {
-            tblSongs.getSelectionModel().selectNext();
+            int currentIndex = tblSongs.getSelectionModel().getSelectedIndex();
+            if (currentIndex < tblSongs.getItems().size() - 1) {
+                tblSongs.getSelectionModel().selectNext();
+            } else {
+                tblSongs.getSelectionModel().selectFirst();
+            }
             selectedSong = tblSongs.getSelectionModel().getSelectedItem();
         }
         playSong();
@@ -353,5 +413,104 @@ public class MyTunesController implements Initializable {
     }
 
 
-    
+    @FXML
+    private void onDeleteSongOnPlaylistPressed(ActionEvent actionEvent) throws Exception {
+        MyTunes selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
+        Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
+
+        if (selectedSong != null && selectedPlaylist != null) {
+            try {
+                myTunesModel.deleteSongFromPlaylist(selectedSong, selectedPlaylist);
+                lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(selectedPlaylist)); // Refresh the songs in the playlist
+            } catch (Exception e) {
+                displayError(e);
+            }
+        } else {
+            System.out.println("No song or playlist selected");
+        }
+    }
+
+    public void onDeletePlaylistPressed(ActionEvent actionEvent) throws Exception {
+        Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
+
+        if (selectedPlaylist != null) {
+            myTunesModel.deletePlaylist(selectedPlaylist);
+            refreshPlaylists(); // Refresh the playlist table
+        } else {
+            System.out.println("No playlist selected");
+        }
+    }
+
+    @FXML
+    private void onEditPlaylistPressed(ActionEvent actionEvent) throws Exception {
+        Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
+
+        if (selectedPlaylist != null) {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/PlaylistView.fxml"));
+            Parent root = fxmlLoader.load();
+
+            PlaylistViewController playlistController = fxmlLoader.getController();
+            playlistController.setMyTunesModel(myTunesModel);
+            playlistController.setMyTunesController(this);
+            playlistController.loadPlaylistData(selectedPlaylist, myTunesModel.getSongsForPlaylist(selectedPlaylist));
+
+            Stage stage = new Stage();
+            stage.setTitle("Edit Playlist");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+        } else {
+            System.out.println("No playlist selected");
+        }
+    }
+
+    @FXML
+    private void onMoveSongUpPressed(ActionEvent actionEvent) {
+        MyTunes selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
+        Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
+
+        if (selectedSong != null && selectedPlaylist != null) {
+            try {
+                myTunesModel.moveSongUpInPlaylist(selectedSong, selectedPlaylist);
+                lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(selectedPlaylist)); // Refresh the songs in the playlist
+            } catch (Exception e) {
+                displayError(e);
+            }
+        } else {
+            System.out.println("No song or playlist selected");
+        }
+    }
+
+    @FXML
+    private void onMoveSongDownPressed(ActionEvent actionEvent) {
+        MyTunes selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
+        Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
+
+        if (selectedSong != null && selectedPlaylist != null) {
+            try {
+                myTunesModel.moveSongDownInPlaylist(selectedSong, selectedPlaylist);
+                lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(selectedPlaylist)); // Refresh the songs in the playlist
+            } catch (Exception e) {
+                displayError(e);
+            }
+        } else {
+            System.out.println("No song or playlist selected");
+        }
+    }
+
+    public void onMoveToPlaylistPressed(ActionEvent actionEvent) {
+        MyTunes selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+        Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
+
+        if (selectedSong != null && selectedPlaylist != null) {
+            try {
+                myTunesModel.addSongToPlaylist(selectedSong, selectedPlaylist);
+                lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(selectedPlaylist)); // Refresh the songs in the playlist
+            } catch (Exception e) {
+                displayError(e);
+            }
+        } else {
+            System.out.println("No song or playlist selected");
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package dk.easv.mytunes.GUI.Controller;
 
 import dk.easv.mytunes.BE.MyTunes;
+import dk.easv.mytunes.BE.Playlist;
 import dk.easv.mytunes.GUI.Model.MyTunesModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -31,10 +32,17 @@ public class PlaylistViewController {
 
     private MyTunesModel myTunesModel;
     private MyTunesController myTunesController;
+    private int currentPlaylistId;
 
     public void setMyTunesModel(MyTunesModel model) {
         this.myTunesModel = model;
         loadAvailableSongs();
+    }
+
+    public void loadPlaylistData(Playlist playlist, ObservableList<MyTunes> songs) {
+        playlistNameField.setText(playlist.getName());
+        selectedSongs.setAll(songs);
+        currentPlaylistId = playlist.getId();
     }
 
     public void setMyTunesController(MyTunesController myTunesController) {
@@ -62,8 +70,12 @@ public class PlaylistViewController {
     @FXML
     private void onAddSong() {
         MyTunes selectedSong = tblAvailableSongs.getSelectionModel().getSelectedItem();
-        if (selectedSong != null && !selectedSongs.contains(selectedSong.getTitle())) {
-            selectedSongs.add(selectedSong);
+        if (selectedSong != null) {
+            boolean songExists = selectedSongs.stream()
+                    .anyMatch(song -> song.getId() == selectedSong.getId());
+            if (!songExists) {
+                selectedSongs.add(selectedSong);
+            }
         }
     }
 
@@ -84,7 +96,15 @@ public class PlaylistViewController {
         }
 
         try {
-            myTunesModel.createPlaylist(playlistName, selectedSongs);
+            Playlist existingPlaylist = myTunesModel.getPlaylistById(currentPlaylistId);
+            if (existingPlaylist != null) {
+                // Update the existing playlist
+                existingPlaylist.setName(playlistName);
+                myTunesModel.updatePlaylist(existingPlaylist, selectedSongs);
+            } else {
+                // Create a new playlist
+                myTunesModel.createPlaylist(playlistName, selectedSongs);
+            }
             myTunesController.refreshPlaylists();
             closeWindow();
         } catch (Exception e) {

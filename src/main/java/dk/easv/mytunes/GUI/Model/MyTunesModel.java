@@ -3,6 +3,7 @@ package dk.easv.mytunes.GUI.Model;
 import dk.easv.mytunes.BE.MyTunes;
 import dk.easv.mytunes.BE.Playlist;
 import dk.easv.mytunes.BLL.MyTunesManager;
+import dk.easv.mytunes.DAL.MyTunesDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -13,6 +14,8 @@ public class MyTunesModel {
     private ObservableList<MyTunes> songsToBeViewed;
 
     private MyTunesManager myTunesManager;
+
+    private MyTunesDAO myTunesDAO = new MyTunesDAO();
 
     public MyTunesModel() throws Exception {
         myTunesManager = new MyTunesManager();
@@ -91,5 +94,40 @@ public class MyTunesModel {
     public ObservableList<Playlist> getAllPlaylists() throws Exception {
         List<Playlist> playlists = myTunesManager.getAllPlaylists();
         return FXCollections.observableArrayList(playlists);
+    }
+
+    public void deletePlaylist(Playlist playlist) throws Exception {
+        myTunesDAO.deletePlaylist(playlist);
+    }
+
+    public void addSongToPlaylist(MyTunes song, Playlist playlist) throws Exception {
+        myTunesDAO.addSongToPlaylist(song, playlist);
+    }
+
+    public void deleteSongFromPlaylist(MyTunes song, Playlist playlist) throws Exception {
+        myTunesDAO.deleteSongFromPlaylist(song, playlist.getId());
+    }
+
+    // MyTunesModel.java
+    public void moveSongUpInPlaylist(MyTunes song, Playlist playlist) throws Exception {
+        myTunesDAO.moveSongUpInPlaylist(song, playlist.getId());
+    }
+
+    public void moveSongDownInPlaylist(MyTunes song, Playlist playlist) throws Exception {
+        myTunesDAO.moveSongDownInPlaylist(song, playlist.getId());
+    }
+
+    public Playlist getPlaylistById(int id) throws Exception {
+        List<Playlist> playlists = myTunesManager.getAllPlaylists();
+        for (Playlist playlist : playlists) {
+            if (playlist.getId() == id) {
+                return playlist;
+            }
+        }
+        return null;
+    }
+
+    public void updatePlaylist(Playlist playlist, ObservableList<MyTunes> songs) throws Exception {
+        myTunesManager.updatePlaylist(playlist, songs);
     }
 }
