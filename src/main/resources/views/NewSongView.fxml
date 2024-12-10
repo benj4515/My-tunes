@@ -10,7 +10,6 @@
    <children>
       <Button fx:id="btnSave" layoutX="397.0" layoutY="213.0" mnemonicParsing="false" onAction="#onCreate" text="Save" />
       <Button fx:id="btnCancel" layoutX="334.0" layoutY="213.0" mnemonicParsing="false" onAction="#onCancelButtonPressed" text="Cancel" />
-      <Button fx:id="btnCategoryMore" layoutX="262.0" layoutY="96.0" mnemonicParsing="false" text="More..." />
       <ComboBox fx:id="cbbCategory" editable="true" layoutX="83.0" layoutY="96.0" prefWidth="150.0" />
       <TextField fx:id="txtTime" layoutX="84.0" layoutY="131.0" />
       <TextField fx:id="txtFile" editable="false" layoutX="84.0" layoutY="167.0" prefHeight="25.0" prefWidth="150.0" />

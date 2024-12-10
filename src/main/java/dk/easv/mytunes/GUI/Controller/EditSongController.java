@@ -10,9 +10,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 public class EditSongController {
 
     @FXML
@@ -56,20 +53,22 @@ public class EditSongController {
     }
 
     @FXML
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void initialize() {
+        // get drop down menu with music genre
         cbbCategory.getItems().addAll(
                 "Pop", "Rock", "Jazz", "Classical", "Hip-Hop",
                 "Country", "Reggae", "Electronic", "Blues", "Folk"
         );
         cbbCategory.setEditable(true);
 
-        // Add listener
+        // Add listener for address
         txtTitle.textProperty().addListener((observable, oldValue, newValue) -> {
             txtFile.setText("Music/" + newValue);
         });
     }
     private void displayError(Throwable t)
     {
+        // showing a error message if something went wrong
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Something went wrong");
         alert.setHeaderText(t.getMessage());
@@ -80,8 +79,8 @@ public class EditSongController {
     public void onEdit(ActionEvent actionEvent) throws Exception {
         MyTunes selectedSong = myTunesController.getSelectedSong();
 
+        // gets all song information into the edit dialog  - when saving it updates the info with list and database
         if (selectedSong != null) {
-            System.out.println("Shit fuck: " + selectedSong);
             selectedSong.setTitle(txtTitle.getText());
             selectedSong.setArtist(txtArtist.getText());
             selectedSong.setCategory(cbbCategory.getValue());
@@ -101,7 +100,8 @@ public class EditSongController {
     }
     @FXML
     public void onCancelButtonPressed(ActionEvent actionEvent) {
-        System.out.printf(cbbCategory.getValue());
+        Stage stage = (Stage) btnSave.getScene().getWindow();
+        stage.close();
     }
 
     public void onMP3Pressed(ActionEvent actionEvent) {

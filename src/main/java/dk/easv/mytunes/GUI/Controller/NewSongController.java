@@ -94,7 +94,8 @@ public class NewSongController {
     }
     @FXML
     public void onCancelButtonPressed(ActionEvent actionEvent) {
-        System.out.printf(txtFile.getText());
+        Stage stage = (Stage) btnSave.getScene().getWindow();
+        stage.close();
     }
 
     public void onMP3Pressed(ActionEvent actionEvent) {

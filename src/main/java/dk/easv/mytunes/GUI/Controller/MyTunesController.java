@@ -16,14 +16,12 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
+import javax.swing.*;
 import java.io.File;
-import java.io.IOError;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -47,14 +45,6 @@ public class MyTunesController implements Initializable {
     private TableColumn<Playlist, String> colName;
 
     @FXML
-    private TableColumn<Playlist, Integer> colSongCount;
-
-    @FXML
-    private TableColumn<Playlist, String> colTotalTime;
-
-    private ObservableList<Playlist> playlists;
-
-    @FXML
     private TableView<MyTunes> tblSongs;
 
     @FXML
@@ -73,13 +63,7 @@ public class MyTunesController implements Initializable {
     private MyTunesModel myTunesModel;
 
     @FXML
-    private MediaView mediaViewThing;
-    @FXML
     private Button btnPlay;
-    @FXML
-    private Button btnLast;
-    @FXML
-    private Button btnNext;
 
     private MyTunes selectedSong;
     private MediaPlayer mediaPlayer;
@@ -221,12 +205,15 @@ public class MyTunesController implements Initializable {
         if (selectedSong != null) {
             if (mediaPlayer == null || !mediaPlayer.getMedia().getSource().equals(new File("src/main/resources/" + selectedSong.getAddress()).toURI().toString())) {
                 playSong();
+                btnPlay.setText("Pause");
             } else {
                 MediaPlayer.Status status = mediaPlayer.getStatus();
                 if (status == MediaPlayer.Status.PLAYING) {
                     mediaPlayer.pause();
+                    btnPlay.setText("Play");
                 } else if (status == MediaPlayer.Status.PAUSED || status == MediaPlayer.Status.STOPPED) {
                     mediaPlayer.play();
+                    btnPlay.setText("Pause");
                 }
             }
         } else {
@@ -271,8 +258,10 @@ public class MyTunesController implements Initializable {
                         selectedSong = tblSongs.getSelectionModel().getSelectedItem();
                     }
                     playSong();
+                    btnPlay.setText("Pause");
                 });
                 mediaPlayer.play();
+                btnPlay.setText("Pause");
                 System.out.println("Playing music: " + selectedSong.getTitle());
                 lblPlayingSong.setText("Playing: " + selectedSong.getTitle() + " by " + selectedSong.getArtist());
             } catch (MediaException e) {
@@ -365,14 +354,25 @@ public class MyTunesController implements Initializable {
         
     @FXML
     private void onDeleteSongButtonPressed(ActionEvent actionEvent) throws Exception {
-        MyTunes selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+        // Show a confirmation dialog
+        int answer = JOptionPane.showConfirmDialog(null, "Are you sure?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
 
-        if (selectedSong != null)
-        {
-            // Delete song in DAL layer (through the layers)
-            myTunesModel.deleteSong(selectedSong);
+        if (answer == JOptionPane.YES_OPTION) {
+            // Get the selected song
+            MyTunes selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+
+            if (selectedSong != null) {
+                // Delete song in DAL layer (through the layers)
+                myTunesModel.deleteSong(selectedSong);
+                System.out.println("Song deleted successfully.");
+            } else {
+                // Inform the user that no song was selected
+                JOptionPane.showMessageDialog(null, "No song selected. Please select a song to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
+
+
 
     public void tableRefresh() {
         System.out.println("tableRefresh called");
