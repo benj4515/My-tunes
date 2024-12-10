@@ -421,7 +421,27 @@ public class MyTunesController implements Initializable {
         }
     }
 
-    public void onEditPlaylistPressed(ActionEvent actionEvent) {
+    @FXML
+    private void onEditPlaylistPressed(ActionEvent actionEvent) throws Exception {
+        Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
+
+        if (selectedPlaylist != null) {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/PlaylistView.fxml"));
+            Parent root = fxmlLoader.load();
+
+            PlaylistViewController playlistController = fxmlLoader.getController();
+            playlistController.setMyTunesModel(myTunesModel);
+            playlistController.setMyTunesController(this);
+            playlistController.loadPlaylistData(selectedPlaylist, myTunesModel.getSongsForPlaylist(selectedPlaylist));
+
+            Stage stage = new Stage();
+            stage.setTitle("Edit Playlist");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+        } else {
+            System.out.println("No playlist selected");
+        }
     }
 
     @FXML

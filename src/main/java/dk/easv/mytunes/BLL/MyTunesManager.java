@@ -5,6 +5,7 @@ import dk.easv.mytunes.BE.Playlist;
 import dk.easv.mytunes.BLL.Util.SongSearcher;
 import dk.easv.mytunes.DAL.ISongDataAccess;
 import dk.easv.mytunes.DAL.MyTunesDAO;
+import javafx.collections.ObservableList;
 
 import java.io.IOException;
 import java.util.List;
@@ -49,5 +50,9 @@ public class MyTunesManager {
 
     public List<Playlist> getAllPlaylists() throws Exception {
         return songsDAO.getAllPlaylists();
+    }
+
+    public void updatePlaylist(Playlist playlist, ObservableList<MyTunes> songs) throws Exception {
+        songsDAO.updatePlaylist(playlist, songs);
     }
 }

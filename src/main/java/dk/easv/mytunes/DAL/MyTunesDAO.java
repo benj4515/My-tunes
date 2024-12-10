@@ -2,6 +2,7 @@ package dk.easv.mytunes.DAL;
 
 import dk.easv.mytunes.BE.MyTunes;
 import dk.easv.mytunes.BE.Playlist;
+import javafx.collections.ObservableList;
 
 import java.io.IOException;
 import java.sql.*;
@@ -405,6 +406,47 @@ public class MyTunesDAO implements ISongDataAccess {
         } catch (SQLException ex) {
             ex.printStackTrace();
             throw new Exception("Could not move song down in playlist", ex);
+        }
+    }
+
+    public void updatePlaylist(Playlist playlist, ObservableList<MyTunes> songs) throws SQLException {
+        String updatePlaylistSql = "UPDATE dbo.Playlist SET PlaylistName = ? WHERE Id = ?";
+        String deletePlaylistSongsSql = "DELETE FROM dbo.PlaylistSongs WHERE PlaylistId = ?";
+        String insertPlaylistSongsSql = "INSERT INTO dbo.PlaylistSongs (PlaylistId, IdSong, SongName, Position) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = dbConnector.getConnection()) {
+            conn.setAutoCommit(false); // Start transaction
+
+            // Update playlist name
+            try (PreparedStatement stmt = conn.prepareStatement(updatePlaylistSql)) {
+                stmt.setString(1, playlist.getName());
+                stmt.setInt(2, playlist.getId());
+                stmt.executeUpdate();
+            }
+
+            // Delete existing songs in the playlist
+            try (PreparedStatement stmt = conn.prepareStatement(deletePlaylistSongsSql)) {
+                stmt.setInt(1, playlist.getId());
+                stmt.executeUpdate();
+            }
+
+            // Insert new songs into the playlist
+            try (PreparedStatement stmt = conn.prepareStatement(insertPlaylistSongsSql)) {
+                int position = 1;
+                for (MyTunes song : songs) {
+                    stmt.setInt(1, playlist.getId());
+                    stmt.setInt(2, song.getId());
+                    stmt.setString(3, song.getTitle());
+                    stmt.setInt(4, position++);
+                    stmt.addBatch();
+                }
+                stmt.executeBatch();
+            }
+
+            conn.commit(); // Commit transaction
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new SQLException("Could not update playlist", ex);
         }
     }
 }

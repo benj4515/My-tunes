@@ -116,4 +116,18 @@ public class MyTunesModel {
     public void moveSongDownInPlaylist(MyTunes song, Playlist playlist) throws Exception {
         myTunesDAO.moveSongDownInPlaylist(song, playlist.getId());
     }
+
+    public Playlist getPlaylistById(int id) throws Exception {
+        List<Playlist> playlists = myTunesManager.getAllPlaylists();
+        for (Playlist playlist : playlists) {
+            if (playlist.getId() == id) {
+                return playlist;
+            }
+        }
+        return null;
+    }
+
+    public void updatePlaylist(Playlist playlist, ObservableList<MyTunes> songs) throws Exception {
+        myTunesManager.updatePlaylist(playlist, songs);
+    }
 }
