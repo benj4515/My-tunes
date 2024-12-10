@@ -3,6 +3,8 @@ package dk.easv.mytunes.GUI.Controller;
 import dk.easv.mytunes.BE.MyTunes;
 import dk.easv.mytunes.BE.Playlist;
 import dk.easv.mytunes.GUI.Model.MyTunesModel;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -37,6 +39,7 @@ public class MyTunesController implements Initializable {
     public Button btnDeleteSongOnPlaylist;
     public Button btnDeletePlaylist;
 
+
     @FXML
     private TableView<Playlist> tblPlaylists;
 
@@ -56,8 +59,13 @@ public class MyTunesController implements Initializable {
     private TableColumn<MyTunes, String> colCategory;
 
     @FXML
-    private TableColumn<MyTunes, String> colTime;
+    private TableColumn<MyTunes, Integer> colTime;
 
+    @FXML
+    private TableColumn<Playlist, Integer> colSongCount;
+
+    @FXML
+    private TableColumn<Playlist, String> colTotalTime;
 
     private MyTunesModel myTunesModel;
 
@@ -82,7 +90,7 @@ public class MyTunesController implements Initializable {
 
     private void displayError(Throwable t) {
 
-        // displays if any error occours 
+        // displays if any error occours
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText(t.getMessage());
@@ -91,18 +99,58 @@ public class MyTunesController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
         // setup columns in tableview
         colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         colArtist.setCellValueFactory(new PropertyValueFactory<>("artist"));
         colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
+
+        // Custom cell value factory for colTime to display minutes and seconds
         colTime.setCellValueFactory(new PropertyValueFactory<>("time"));
+        colTime.setCellFactory(column -> new TableCell<MyTunes, Integer>() {
+            @Override
+            protected void updateItem(Integer timeInSeconds, boolean empty) {
+                super.updateItem(timeInSeconds, empty);
+                if (empty || timeInSeconds == null) {
+                    setText(null);
+                } else {
+                    int minutes = timeInSeconds / 60;
+                    int seconds = timeInSeconds % 60;
+                    setText(String.format("%d:%02d", minutes, seconds));
+                }
+            }
+        });
 
         // setup columns in tableview
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
 
+        // New column for song count
+        colSongCount.setCellValueFactory(cellData -> {
+            Playlist playlist = cellData.getValue();
+            try {
+                return new SimpleIntegerProperty(myTunesModel.getSongsForPlaylist(playlist).size()).asObject();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new SimpleIntegerProperty(0).asObject();
+            }
+        });
+
+        // New column for total time
+        colTotalTime.setCellValueFactory(cellData -> {
+            Playlist playlist = cellData.getValue();
+            try {
+                int totalSeconds = myTunesModel.getSongsForPlaylist(playlist).stream().mapToInt(MyTunes::getTime).sum();
+                int hours = totalSeconds / 3600;
+                int minutes = (totalSeconds % 3600) / 60;
+                int seconds = totalSeconds % 60;
+                return new SimpleStringProperty(String.format("%d:%02d:%02d", hours, minutes, seconds));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new SimpleStringProperty("0:00:00");
+            }
+        });
+
         try {
-            tblPlaylists.setItems((myTunesModel.getAllPlaylists()));
+            tblPlaylists.setItems(myTunesModel.getAllPlaylists());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -116,33 +164,6 @@ public class MyTunesController implements Initializable {
                 selectedSong = newValue; // Set the selected song
                 System.out.println("Selected song: " + selectedSong.getAddress());
                 lblPlayingSong.setText("Selected: " + selectedSong.getTitle());
-            }
-        });
-
-        tblPlaylists.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> {
-            if (newValue != null) {
-                try {
-                    lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(newValue));
-                    lstSongsOnList.getSelectionModel().selectedItemProperty().addListener((_, _, newSong) -> {
-                        if (newSong != null) {
-                            selectedSong = (MyTunes) newSong; // Set the selected song from the playlist
-                            System.out.println("Selected song from playlist: " + selectedSong.getAddress());
-                            lblPlayingSong.setText("Selected: " + selectedSong.getTitle());
-                        }
-                    });
-                } catch (Exception e) {
-                    displayError(e);
-                }
-            }
-        });
-
-        tblPlaylists.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> {
-            if (newValue != null) {
-                try {
-                    lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(newValue));
-                } catch (Exception e) {
-                    displayError(e);
-                }
             }
         });
 
@@ -203,6 +224,7 @@ public class MyTunesController implements Initializable {
 
     @FXML
     private void onPlayButtonPressed() {
+        //runs the playsong method of the selected song and change the label of the play pause button
         if (selectedSong != null) {
             if (mediaPlayer == null || !mediaPlayer.getMedia().getSource().equals(new File("src/main/resources/" + selectedSong.getAddress()).toURI().toString())) {
                 playSong();
@@ -224,6 +246,8 @@ public class MyTunesController implements Initializable {
     }
 
     private void playSong() {
+
+        //this is the method that plays the actual song with the java media player - it checks whether the song is playing and should be paused, start a new song or continue playing the previous song
         if (selectedSong != null) {
             try {
                 if (mediaPlayer != null) {
@@ -279,6 +303,7 @@ public class MyTunesController implements Initializable {
 
     @FXML
     private void onLastButtonPressed() {
+        // this button takes the selected song id and goes to the previous song on the list
         if (lstSongsOnList.getSelectionModel().getSelectedItem() != null) {
             int currentIndex = lstSongsOnList.getSelectionModel().getSelectedIndex();
             if (currentIndex > 0) {
@@ -301,6 +326,7 @@ public class MyTunesController implements Initializable {
 
     @FXML
     private void onNextButtonPressed() {
+        // this button takes the selected song id and goes to the next song on the list
         if (lstSongsOnList.getSelectionModel().getSelectedItem() != null) {
             int currentIndex = lstSongsOnList.getSelectionModel().getSelectedIndex();
             if (currentIndex < lstSongsOnList.getItems().size() - 1) {
@@ -323,6 +349,7 @@ public class MyTunesController implements Initializable {
 
     @FXML
     private void onNewSongButtonPressed() throws IOException {
+        // this button makes a new stage where a new windows pops up where you need to fullfill it with the necessary info
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/NewSongView.fxml"));
         Parent root = fxmlLoader.load();
 
@@ -339,6 +366,7 @@ public class MyTunesController implements Initializable {
 
     @FXML
     private void onEditSongButtonPressed() throws Exception {
+        // this button makes a new stage where a new windows pops up where you can edit the selected songs info
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/EditSongView.fxml"));
         Parent root = fxmlLoader.load();
 
@@ -373,8 +401,8 @@ public class MyTunesController implements Initializable {
         }
     }
 
-
     public void tableRefresh() {
+        // this method updates the tableview with songs with latest dataset
         System.out.println("tableRefresh called");
         try {
             myTunesModel.refreshSongs();
@@ -389,15 +417,21 @@ public class MyTunesController implements Initializable {
     }
 
     public void refreshPlaylists() {
+        // this method updates the tableview with playlists with latest dataset
+        Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem(); // Store the currently selected playlist
         try {
-            tblPlaylists.setItems((myTunesModel.getAllPlaylists()));
+            tblPlaylists.setItems(myTunesModel.getAllPlaylists());
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        if (selectedPlaylist != null) {
+            tblPlaylists.getSelectionModel().select(selectedPlaylist); // Reselect the previously selected playlist
         }
     }
 
     @FXML
     private void onNewPlaylistPressed() throws IOException {
+        // this makes a new windows where you can make a new playlist and add songs to the playlist
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/PlaylistView.fxml"));
         Parent root = fxmlLoader.load();
 
@@ -415,6 +449,7 @@ public class MyTunesController implements Initializable {
 
     @FXML
     private void onDeleteSongOnPlaylistPressed() {
+        // this button deletes the selected song from the selected playlist
         MyTunes selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
         Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
 
@@ -422,6 +457,7 @@ public class MyTunesController implements Initializable {
             try {
                 myTunesModel.deleteSongFromPlaylist(selectedSong, selectedPlaylist);
                 lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(selectedPlaylist)); // Refresh the songs in the playlist
+                refreshPlaylists(); // Refresh the playlist table
             } catch (Exception e) {
                 displayError(e);
             }
@@ -431,6 +467,8 @@ public class MyTunesController implements Initializable {
     }
 
     public void onDeletePlaylistPressed() throws Exception {
+
+        // this button deletes the whole playlist
         Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
 
         if (selectedPlaylist != null) {
@@ -443,6 +481,8 @@ public class MyTunesController implements Initializable {
 
     @FXML
     private void onEditPlaylistPressed() throws Exception {
+
+        // this button makes a new window where you can edit the selected playlist add new songs or delete song from playlist
         Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
 
         if (selectedPlaylist != null) {
@@ -465,7 +505,8 @@ public class MyTunesController implements Initializable {
     }
 
     @FXML
-    private void onMoveSongUpPressed() {
+    public void onMoveSongUpPressed() {
+        // this button edits the order of songs in the playlist, so that the selected song goes one up in the song order when pressed
         MyTunes selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
         Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
 
@@ -473,6 +514,7 @@ public class MyTunesController implements Initializable {
             try {
                 myTunesModel.moveSongUpInPlaylist(selectedSong, selectedPlaylist);
                 lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(selectedPlaylist)); // Refresh the songs in the playlist
+                refreshPlaylists(); // Refresh the playlist table
             } catch (Exception e) {
                 displayError(e);
             }
@@ -482,7 +524,8 @@ public class MyTunesController implements Initializable {
     }
 
     @FXML
-    private void onMoveSongDownPressed() {
+    public void onMoveSongDownPressed() {
+        // this button edits the order of songs in the playlist, so that the selected song goes one down in the song order when pressed
         MyTunes selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
         Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
 
@@ -490,6 +533,7 @@ public class MyTunesController implements Initializable {
             try {
                 myTunesModel.moveSongDownInPlaylist(selectedSong, selectedPlaylist);
                 lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(selectedPlaylist)); // Refresh the songs in the playlist
+                refreshPlaylists(); // Refresh the playlist table
             } catch (Exception e) {
                 displayError(e);
             }
@@ -499,6 +543,7 @@ public class MyTunesController implements Initializable {
     }
 
     public void onMoveToPlaylistPressed() {
+        // this button adds the selected song from tableview to the selected playlist
         MyTunes selectedSong = tblSongs.getSelectionModel().getSelectedItem();
         Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
 
@@ -506,6 +551,7 @@ public class MyTunesController implements Initializable {
             try {
                 myTunesModel.addSongToPlaylist(selectedSong, selectedPlaylist);
                 lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(selectedPlaylist)); // Refresh the songs in the playlist
+                refreshPlaylists(); // Refresh the playlist table
             } catch (Exception e) {
                 displayError(e);
             }

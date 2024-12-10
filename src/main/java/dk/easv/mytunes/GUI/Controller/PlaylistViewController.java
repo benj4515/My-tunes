@@ -38,6 +38,7 @@ public class PlaylistViewController {
     }
 
     public void loadPlaylistData(Playlist playlist, ObservableList<MyTunes> songs) {
+        // this method
         playlistNameField.setText(playlist.getName());
         selectedSongs.setAll(songs);
         currentPlaylistId = playlist.getId();
@@ -58,6 +59,7 @@ public class PlaylistViewController {
     }
 
     private void loadAvailableSongs() {
+        // This method loads all available songs from the songs list
         try {
             availableSongs.setAll(myTunesModel.getObservableSongs());
         } catch (Exception e) {
@@ -67,6 +69,7 @@ public class PlaylistViewController {
 
     @FXML
     private void onAddSong() {
+        // this button adds the selected song from available song to the made or selected playlist
         MyTunes selectedSong = tblAvailableSongs.getSelectionModel().getSelectedItem();
         if (selectedSong != null) {
             boolean songExists = selectedSongs.stream()
@@ -79,6 +82,7 @@ public class PlaylistViewController {
 
     @FXML
     private void onRemoveSong() {
+        // this button removes the selected song from the selected playlist
         MyTunes selectedSong = lstSelectedSongs.getSelectionModel().getSelectedItem();
         if (selectedSong != null) {
             selectedSongs.remove(selectedSong);
@@ -87,6 +91,7 @@ public class PlaylistViewController {
 
     @FXML
     private void onSavePlaylist() {
+        // this button saves the collection of the playlist to the list and database if new it makes a new playlist if existing it updates with new dataset
         String playlistName = playlistNameField.getText();
         if (playlistName.isEmpty()) {
             showError("Playlist name is required!");
@@ -116,11 +121,13 @@ public class PlaylistViewController {
     }
 
     private void closeWindow() {
+        // this closes the window
         Stage stage = (Stage) playlistNameField.getScene().getWindow();
         stage.close();
     }
 
     private void showError(String message) {
+        // this shows error if any occurs
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setContentText(message);

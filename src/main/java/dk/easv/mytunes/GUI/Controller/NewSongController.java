@@ -38,6 +38,7 @@ public class NewSongController {
 
     @FXML
     private void initialize() {
+        // this adds the music genre to the combobox with predefined genre
         cbbCategory.getItems().addAll(
                 "Pop", "Rock", "Jazz", "Classical", "Hip-Hop",
                 "Country", "Reggae", "Electronic", "Blues", "Folk"
@@ -49,6 +50,7 @@ public class NewSongController {
     }
 
     private void displayError(Throwable t) {
+        // This display if any error occours
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Something went wrong");
         alert.setHeaderText(t.getMessage());
@@ -87,11 +89,13 @@ public class NewSongController {
 
     @FXML
     public void onCancelButtonPressed() {
+        // this closes the window
         Stage stage = (Stage) btnSave.getScene().getWindow();
         stage.close();
     }
 
     public void onMP3Pressed() {
+        // this adds .mp3 to the address so that the user doesn't have to write it
         String currentText = txtFile.getText();
         if (currentText.toLowerCase().endsWith(".wav")) {
             currentText = currentText.substring(0, currentText.lastIndexOf('.')) + ".mp3";
@@ -102,6 +106,7 @@ public class NewSongController {
     }
 
     public void onWAVPressed() {
+        // this adds .wav to the address so that the user doesn't have to write it
         String currentText = txtFile.getText();
         if (currentText.toLowerCase().endsWith(".mp3")) {
             currentText = currentText.substring(0, currentText.lastIndexOf('.')) + ".wav";
