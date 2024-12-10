@@ -270,10 +270,20 @@ public class MyTunesController implements Initializable {
     @FXML
     private void onLastButtonPressed(ActionEvent actionEvent) {
         if (lstSongsOnList.getSelectionModel().getSelectedItem() != null) {
-            lstSongsOnList.getSelectionModel().selectPrevious();
+            int currentIndex = lstSongsOnList.getSelectionModel().getSelectedIndex();
+            if (currentIndex > 0) {
+                lstSongsOnList.getSelectionModel().selectPrevious();
+            } else {
+                lstSongsOnList.getSelectionModel().selectLast();
+            }
             selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
         } else {
-            tblSongs.getSelectionModel().selectPrevious();
+            int currentIndex = tblSongs.getSelectionModel().getSelectedIndex();
+            if (currentIndex > 0) {
+                tblSongs.getSelectionModel().selectPrevious();
+            } else {
+                tblSongs.getSelectionModel().selectLast();
+            }
             selectedSong = tblSongs.getSelectionModel().getSelectedItem();
         }
         playSong();
@@ -282,10 +292,20 @@ public class MyTunesController implements Initializable {
     @FXML
     private void onNextButtonPressed(ActionEvent actionEvent) {
         if (lstSongsOnList.getSelectionModel().getSelectedItem() != null) {
-            lstSongsOnList.getSelectionModel().selectNext();
+            int currentIndex = lstSongsOnList.getSelectionModel().getSelectedIndex();
+            if (currentIndex < lstSongsOnList.getItems().size() - 1) {
+                lstSongsOnList.getSelectionModel().selectNext();
+            } else {
+                lstSongsOnList.getSelectionModel().selectFirst();
+            }
             selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
         } else {
-            tblSongs.getSelectionModel().selectNext();
+            int currentIndex = tblSongs.getSelectionModel().getSelectedIndex();
+            if (currentIndex < tblSongs.getItems().size() - 1) {
+                tblSongs.getSelectionModel().selectNext();
+            } else {
+                tblSongs.getSelectionModel().selectFirst();
+            }
             selectedSong = tblSongs.getSelectionModel().getSelectedItem();
         }
         playSong();
@@ -404,10 +424,38 @@ public class MyTunesController implements Initializable {
     public void onEditPlaylistPressed(ActionEvent actionEvent) {
     }
 
-    public void onMoveSongUpPressed(ActionEvent actionEvent) {
+    @FXML
+    private void onMoveSongUpPressed(ActionEvent actionEvent) {
+        MyTunes selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
+        Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
+
+        if (selectedSong != null && selectedPlaylist != null) {
+            try {
+                myTunesModel.moveSongUpInPlaylist(selectedSong, selectedPlaylist);
+                lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(selectedPlaylist)); // Refresh the songs in the playlist
+            } catch (Exception e) {
+                displayError(e);
+            }
+        } else {
+            System.out.println("No song or playlist selected");
+        }
     }
 
-    public void onMoveSongDownPressed(ActionEvent actionEvent) {
+    @FXML
+    private void onMoveSongDownPressed(ActionEvent actionEvent) {
+        MyTunes selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
+        Playlist selectedPlaylist = tblPlaylists.getSelectionModel().getSelectedItem();
+
+        if (selectedSong != null && selectedPlaylist != null) {
+            try {
+                myTunesModel.moveSongDownInPlaylist(selectedSong, selectedPlaylist);
+                lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(selectedPlaylist)); // Refresh the songs in the playlist
+            } catch (Exception e) {
+                displayError(e);
+            }
+        } else {
+            System.out.println("No song or playlist selected");
+        }
     }
 
     public void onMoveToPlaylistPressed(ActionEvent actionEvent) {

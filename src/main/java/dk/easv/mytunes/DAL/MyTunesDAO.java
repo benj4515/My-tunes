@@ -123,7 +123,7 @@ public class MyTunesDAO implements ISongDataAccess {
 
     public void createPlaylist(String playlistName, List<MyTunes> selectedSongs) throws Exception {
         String insertPlaylist = "INSERT INTO dbo.Playlist (PlaylistName) VALUES (?)";
-        String insertPlaylistSongs = "INSERT INTO dbo.PlaylistSongs (PlaylistId, IdSong, SongName) VALUES (?, ?, ?)";
+        String insertPlaylistSongs = "INSERT INTO dbo.PlaylistSongs (PlaylistId, IdSong, SongName, Position) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = dbConnector.getConnection()) {
             conn.setAutoCommit(false); // Start transaction
@@ -143,10 +143,12 @@ public class MyTunesDAO implements ISongDataAccess {
             }
 
             try (PreparedStatement stmt = conn.prepareStatement(insertPlaylistSongs)) {
+                int position = 1;
                 for (MyTunes song : selectedSongs) {
                     stmt.setInt(1, playlistId);
                     stmt.setInt(2, song.getId());
                     stmt.setString(3, song.getTitle());
+                    stmt.setInt(4, position++); // Set the position and increment it
                     stmt.addBatch();
                 }
                 stmt.executeBatch();
@@ -205,15 +207,15 @@ public class MyTunesDAO implements ISongDataAccess {
     }
 
     public List<MyTunes> getSongsForPlaylist(int playlistId) throws Exception {
-        String query = "SELECT s.Id, s.Title, s.Artist, s.Category, s.Address, s.Time " +
+        String query = "SELECT s.Id, s.Title, s.Artist, s.Category, s.Address, s.Time, ps.Position " +
                 "FROM dbo.Songs s " +
                 "JOIN dbo.PlaylistSongs ps ON s.Id = ps.IdSong " +
-                "WHERE ps.PlaylistId = ?";
+                "WHERE ps.PlaylistId = ? " +
+                "ORDER BY ps.Position";
         List<MyTunes> songs = new ArrayList<>();
 
         try (Connection conn = dbConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-
             stmt.setInt(1, playlistId);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -234,21 +236,46 @@ public class MyTunesDAO implements ISongDataAccess {
         return songs;
     }
 
-    // MyTunesDAO.java
-    // MyTunesDAO.java
     public void addSongToPlaylist(MyTunes song, Playlist playlist) throws Exception {
-        String sql = "INSERT INTO dbo.PlaylistSongs (PlaylistId, IdSong, SongName) VALUES (?, ?, ?)";
+        String checkSongExistsSql = "SELECT COUNT(*) FROM dbo.PlaylistSongs WHERE PlaylistId = ? AND IdSong = ?";
+        String insertSongSql = "INSERT INTO dbo.PlaylistSongs (PlaylistId, IdSong, SongName, Position) VALUES (?, ?, ?, ?)";
 
-        try (Connection conn = dbConnector.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, playlist.getId());
-            stmt.setInt(2, song.getId());
-            stmt.setString(3, song.getTitle()); // Ensure SongName is set
-            stmt.executeUpdate();
+        try (Connection conn = dbConnector.getConnection()) {
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkSongExistsSql)) {
+                checkStmt.setInt(1, playlist.getId());
+                checkStmt.setInt(2, song.getId());
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) > 0) {
+                        throw new Exception("Song already exists in the playlist");
+                    }
+                }
+            }
+
+            try (PreparedStatement insertStmt = conn.prepareStatement(insertSongSql)) {
+                insertStmt.setInt(1, playlist.getId());
+                insertStmt.setInt(2, song.getId());
+                insertStmt.setString(3, song.getTitle());
+                insertStmt.setInt(4, getNextPosition(playlist.getId())); // Set the next position
+                insertStmt.executeUpdate();
+            }
         } catch (SQLException ex) {
             ex.printStackTrace();
             throw new Exception("Could not add song to playlist", ex);
         }
+    }
+
+    private int getNextPosition(int playlistId) throws SQLException {
+        String sql = "SELECT COALESCE(MAX(Position), 0) + 1 AS NextPosition FROM dbo.PlaylistSongs WHERE PlaylistId = ?";
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, playlistId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("NextPosition");
+                }
+            }
+        }
+        return 1; // Default to 1 if no songs are in the playlist
     }
 
     public void deleteSongFromPlaylist(MyTunes song, int playlistId) throws Exception {
@@ -262,6 +289,122 @@ public class MyTunesDAO implements ISongDataAccess {
         } catch (SQLException ex) {
             ex.printStackTrace();
             throw new Exception("Could not delete song from playlist", ex);
+        }
+    }
+
+    public void moveSongUpInPlaylist(MyTunes song, int playlistId) throws Exception {
+        String getCurrentPositionSql = "SELECT Position FROM dbo.PlaylistSongs WHERE IdSong = ? AND PlaylistId = ?";
+        String getAdjacentSongSql = "SELECT IdSong FROM dbo.PlaylistSongs WHERE PlaylistId = ? AND Position = ?";
+        String updatePositionSql = "UPDATE dbo.PlaylistSongs SET Position = ? WHERE IdSong = ? AND PlaylistId = ?";
+
+        try (Connection conn = dbConnector.getConnection()) {
+            conn.setAutoCommit(false);
+
+            int currentPosition;
+            try (PreparedStatement stmt = conn.prepareStatement(getCurrentPositionSql)) {
+                stmt.setInt(1, song.getId());
+                stmt.setInt(2, playlistId);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        currentPosition = rs.getInt("Position");
+                    } else {
+                        throw new SQLException("Song not found in playlist");
+                    }
+                }
+            }
+
+            int newPosition = currentPosition - 1;
+            if (newPosition < 1) {
+                conn.rollback();
+                return; // Already at the top
+            }
+
+            int adjacentSongId;
+            try (PreparedStatement stmt = conn.prepareStatement(getAdjacentSongSql)) {
+                stmt.setInt(1, playlistId);
+                stmt.setInt(2, newPosition);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        adjacentSongId = rs.getInt("IdSong");
+                    } else {
+                        conn.rollback();
+                        return; // No adjacent song found
+                    }
+                }
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(updatePositionSql)) {
+                stmt.setInt(1, newPosition);
+                stmt.setInt(2, song.getId());
+                stmt.setInt(3, playlistId);
+                stmt.executeUpdate();
+
+                stmt.setInt(1, currentPosition);
+                stmt.setInt(2, adjacentSongId);
+                stmt.setInt(3, playlistId);
+                stmt.executeUpdate();
+            }
+
+            conn.commit();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new Exception("Could not move song up in playlist", ex);
+        }
+    }
+
+    public void moveSongDownInPlaylist(MyTunes song, int playlistId) throws Exception {
+        String getCurrentPositionSql = "SELECT Position FROM dbo.PlaylistSongs WHERE IdSong = ? AND PlaylistId = ?";
+        String getAdjacentSongSql = "SELECT IdSong FROM dbo.PlaylistSongs WHERE PlaylistId = ? AND Position = ?";
+        String updatePositionSql = "UPDATE dbo.PlaylistSongs SET Position = ? WHERE IdSong = ? AND PlaylistId = ?";
+
+        try (Connection conn = dbConnector.getConnection()) {
+            conn.setAutoCommit(false);
+
+            int currentPosition;
+            try (PreparedStatement stmt = conn.prepareStatement(getCurrentPositionSql)) {
+                stmt.setInt(1, song.getId());
+                stmt.setInt(2, playlistId);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        currentPosition = rs.getInt("Position");
+                    } else {
+                        throw new SQLException("Song not found in playlist");
+                    }
+                }
+            }
+
+            int newPosition = currentPosition + 1;
+
+            int adjacentSongId;
+            try (PreparedStatement stmt = conn.prepareStatement(getAdjacentSongSql)) {
+                stmt.setInt(1, playlistId);
+                stmt.setInt(2, newPosition);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        adjacentSongId = rs.getInt("IdSong");
+                    } else {
+                        conn.rollback();
+                        return; // No adjacent song found
+                    }
+                }
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(updatePositionSql)) {
+                stmt.setInt(1, newPosition);
+                stmt.setInt(2, song.getId());
+                stmt.setInt(3, playlistId);
+                stmt.executeUpdate();
+
+                stmt.setInt(1, currentPosition);
+                stmt.setInt(2, adjacentSongId);
+                stmt.setInt(3, playlistId);
+                stmt.executeUpdate();
+            }
+
+            conn.commit();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new Exception("Could not move song down in playlist", ex);
         }
     }
 }

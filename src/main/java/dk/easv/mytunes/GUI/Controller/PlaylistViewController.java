@@ -62,7 +62,7 @@ public class PlaylistViewController {
     @FXML
     private void onAddSong() {
         MyTunes selectedSong = tblAvailableSongs.getSelectionModel().getSelectedItem();
-        if (selectedSong != null && !selectedSongs.contains(selectedSong.getTitle())) {
+        if (selectedSong != null && !selectedSongs.contains(selectedSong)) {
             selectedSongs.add(selectedSong);
         }
     }

@@ -107,4 +107,13 @@ public class MyTunesModel {
     public void deleteSongFromPlaylist(MyTunes song, Playlist playlist) throws Exception {
         myTunesDAO.deleteSongFromPlaylist(song, playlist.getId());
     }
+
+    // MyTunesModel.java
+    public void moveSongUpInPlaylist(MyTunes song, Playlist playlist) throws Exception {
+        myTunesDAO.moveSongUpInPlaylist(song, playlist.getId());
+    }
+
+    public void moveSongDownInPlaylist(MyTunes song, Playlist playlist) throws Exception {
+        myTunesDAO.moveSongDownInPlaylist(song, playlist.getId());
+    }
 }
