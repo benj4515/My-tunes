@@ -30,10 +30,15 @@ public class PlaylistViewController {
     private ObservableList<MyTunes> selectedSongs = FXCollections.observableArrayList();
 
     private MyTunesModel myTunesModel;
+    private MyTunesController myTunesController;
 
     public void setMyTunesModel(MyTunesModel model) {
         this.myTunesModel = model;
         loadAvailableSongs();
+    }
+
+    public void setMyTunesController(MyTunesController myTunesController) {
+        this.myTunesController = myTunesController;
     }
 
     @FXML
@@ -80,6 +85,7 @@ public class PlaylistViewController {
 
         try {
             myTunesModel.createPlaylist(playlistName, selectedSongs);
+            myTunesController.refreshPlaylists();
             closeWindow();
         } catch (Exception e) {
             showError("Error saving playlist: " + e.getMessage());

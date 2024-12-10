@@ -1,9 +1,7 @@
 package dk.easv.mytunes.DAL;
 
 import dk.easv.mytunes.BE.MyTunes;
-import dk.easv.mytunes.DAL.ISongDataAccess;
-import dk.easv.mytunes.GUI.Controller.MyTunesController;
-import dk.easv.mytunes.GUI.Controller.NewSongController;
+import dk.easv.mytunes.BE.Playlist;
 
 import java.io.IOException;
 import java.sql.*;
@@ -158,9 +156,9 @@ public class MyTunesDAO implements ISongDataAccess {
         }
     }
 
-    public List<MyTunes> getAllPlaylists() throws Exception {
+    public List<Playlist> getAllPlaylists() throws Exception {
         String query = "SELECT * FROM dbo.Playlist";
-        List<MyTunes> playlists = new ArrayList<>();
+        List<Playlist> playlists = new ArrayList<>();
 
         try (Connection conn = dbConnector.getConnection();
              Statement stmt = conn.createStatement();
@@ -169,7 +167,7 @@ public class MyTunesDAO implements ISongDataAccess {
             while (rs.next()) {
                 int id = rs.getInt("Id");
                 String name = rs.getString("PlaylistName");
-                playlists.add(new MyTunes(id, name, null, null, null, 0)); // Adjust constructor if needed
+                playlists.add(new Playlist(id, name)); // Adjust constructor if needed
             }
         } catch (SQLException ex) {
             ex.printStackTrace();

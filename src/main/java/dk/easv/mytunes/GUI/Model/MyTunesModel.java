@@ -1,6 +1,7 @@
 package dk.easv.mytunes.GUI.Model;
 
 import dk.easv.mytunes.BE.MyTunes;
+import dk.easv.mytunes.BE.Playlist;
 import dk.easv.mytunes.BLL.MyTunesManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -82,13 +83,13 @@ public class MyTunesModel {
         myTunesManager.createPlaylist(playlistName, selectedSongs);
     }
 
-    public ObservableList<MyTunes> getSongsForPlaylist(int playlistId) throws Exception {
-        List<MyTunes> playlistSongs = myTunesManager.getSongsForPlaylist(playlistId);
-        return FXCollections.observableArrayList(playlistSongs);
+    public ObservableList<MyTunes> getSongsForPlaylist(Playlist playlist) throws Exception {
+        List<MyTunes> songs = myTunesManager.getSongsForPlaylist(playlist.getId());
+        return FXCollections.observableArrayList(songs);
     }
 
-    public ObservableList<MyTunes> getAllPlaylists() throws Exception {
-        List<MyTunes> playlists = myTunesManager.getAllPlaylists();
+    public ObservableList<Playlist> getAllPlaylists() throws Exception {
+        List<Playlist> playlists = myTunesManager.getAllPlaylists();
         return FXCollections.observableArrayList(playlists);
     }
 }

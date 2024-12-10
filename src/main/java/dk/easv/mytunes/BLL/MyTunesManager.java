@@ -1,6 +1,7 @@
 package dk.easv.mytunes.BLL;
 
 import dk.easv.mytunes.BE.MyTunes;
+import dk.easv.mytunes.BE.Playlist;
 import dk.easv.mytunes.BLL.Util.SongSearcher;
 import dk.easv.mytunes.DAL.ISongDataAccess;
 import dk.easv.mytunes.DAL.MyTunesDAO;
@@ -42,11 +43,11 @@ public class MyTunesManager {
         songsDAO.createPlaylist(playlistName, selectedSongs);
     }
 
-    public List<MyTunes> getAllPlaylists() throws Exception {
-        return songsDAO.getAllPlaylists();
-    }
-
     public List<MyTunes> getSongsForPlaylist(int playlistId) throws Exception {
         return songsDAO.getSongsForPlaylist(playlistId);
+    }
+
+    public List<Playlist> getAllPlaylists() throws Exception {
+        return songsDAO.getAllPlaylists();
     }
 }

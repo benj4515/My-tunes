@@ -1,6 +1,7 @@
 package dk.easv.mytunes.DAL;
 
 import dk.easv.mytunes.BE.MyTunes;
+import dk.easv.mytunes.BE.Playlist;
 
 import java.util.List;
 
@@ -11,6 +12,6 @@ public interface ISongDataAccess {
     void deleteSong(MyTunes myTunes) throws Exception;
     void updateSong(MyTunes myTunes) throws Exception;
     void createPlaylist(String playlistName, List<MyTunes> selectedSongs) throws Exception;
-    List<MyTunes> getAllPlaylists() throws Exception;
+    List<Playlist> getAllPlaylists() throws Exception;
     List<MyTunes> getSongsForPlaylist(int playlistId) throws Exception;
 }

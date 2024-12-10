@@ -1,6 +1,7 @@
 package dk.easv.mytunes.GUI.Controller;
 
 import dk.easv.mytunes.BE.MyTunes;
+import dk.easv.mytunes.BE.Playlist;
 import dk.easv.mytunes.GUI.Model.MyTunesModel;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -33,6 +34,21 @@ public class MyTunesController implements Initializable {
     public Button btnEditSong;
     public TextField txtSearch;
     public Slider sldSongSlider;
+    public ListView lstSongsOnList;
+
+    @FXML
+    private TableView<Playlist> tblPlaylists;
+
+    @FXML
+    private TableColumn<Playlist, String> colName;
+
+    @FXML
+    private TableColumn<Playlist, Integer> colSongCount;
+
+    @FXML
+    private TableColumn<Playlist, String> colTotalTime;
+
+    private ObservableList<Playlist> playlists;
 
     @FXML
     private TableView<MyTunes> tblSongs;
@@ -93,6 +109,15 @@ public class MyTunesController implements Initializable {
         colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
         colTime.setCellValueFactory(new PropertyValueFactory<>("time"));
 
+        // setup columns in tableview
+        colName.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        try {
+            tblPlaylists.setItems((myTunesModel.getAllPlaylists()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         // connect tableview + listview to the ObservableList
         tblSongs.setItems(myTunesModel.getObservableSongs());
 
@@ -103,7 +128,33 @@ public class MyTunesController implements Initializable {
                 System.out.println("Selected song: " + selectedSong.getAddress());
                 lblPlayingSong.setText("Selected: " + selectedSong.getTitle());
             }
+        });
 
+        tblPlaylists.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                try {
+                    lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(newValue));
+                    lstSongsOnList.getSelectionModel().selectedItemProperty().addListener((obs, oldSong, newSong) -> {
+                        if (newSong != null) {
+                            selectedSong = (MyTunes) newSong; // Set the selected song from the playlist
+                            System.out.println("Selected song from playlist: " + selectedSong.getAddress());
+                            lblPlayingSong.setText("Selected: " + selectedSong.getTitle());
+                        }
+                    });
+                } catch (Exception e) {
+                    displayError(e);
+                }
+            }
+        });
+
+        tblPlaylists.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                try {
+                    lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(newValue));
+                } catch (Exception e) {
+                    displayError(e);
+                }
+            }
         });
 
         txtSearch.textProperty().addListener((observableValue, oldValue, newValue) -> {
@@ -178,6 +229,9 @@ public class MyTunesController implements Initializable {
                         sldSongSlider.setValue(newValue.toSeconds());
                     }
                 });
+                mediaPlayer.setOnEndOfMedia(() -> {
+                    onNextButtonPressed(null);
+                });
                 mediaPlayer.play();
                 System.out.println("Playing music: " + selectedSong.getTitle());
                 lblPlayingSong.setText("Playing: " + selectedSong.getTitle() + " by " + selectedSong.getArtist());
@@ -195,13 +249,25 @@ public class MyTunesController implements Initializable {
 
     @FXML
     private void onLastButtonPressed(ActionEvent actionEvent) {
-        tblSongs.getSelectionModel().selectPrevious();
+        if (lstSongsOnList.getSelectionModel().getSelectedItem() != null) {
+            lstSongsOnList.getSelectionModel().selectPrevious();
+            selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
+        } else {
+            tblSongs.getSelectionModel().selectPrevious();
+            selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+        }
         playSong();
     }
 
     @FXML
     private void onNextButtonPressed(ActionEvent actionEvent) {
-        tblSongs.getSelectionModel().selectNext();
+        if (lstSongsOnList.getSelectionModel().getSelectedItem() != null) {
+            lstSongsOnList.getSelectionModel().selectNext();
+            selectedSong = (MyTunes) lstSongsOnList.getSelectionModel().getSelectedItem();
+        } else {
+            tblSongs.getSelectionModel().selectNext();
+            selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+        }
         playSong();
     }
 
@@ -261,14 +327,23 @@ public class MyTunesController implements Initializable {
         tblSongs.setItems(currentSongs); // Reset the items
         tblSongs.refresh(); // Refresh the table
     }
+
+    public void refreshPlaylists() {
+        try {
+            tblPlaylists.setItems((myTunesModel.getAllPlaylists()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     private void onNewPlaylistPressed(ActionEvent actionEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/PlaylistView.fxml"));
         Parent root = fxmlLoader.load();
 
         PlaylistViewController playlistController = fxmlLoader.getController();
-
         playlistController.setMyTunesModel(myTunesModel);
+        playlistController.setMyTunesController(this);
 
         Stage stage = new Stage();
         stage.setTitle("Create New Playlist");
