@@ -3,6 +3,7 @@ package dk.easv.mytunes.GUI.Controller;
 import dk.easv.mytunes.BE.MyTunes;
 import dk.easv.mytunes.BE.Playlist;
 import dk.easv.mytunes.GUI.Model.MyTunesModel;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -188,6 +189,25 @@ public class MyTunesController implements Initializable {
                 double sliderWidth = sldSongSlider.getWidth();
                 double newTime = (mouseX / sliderWidth) * sldSongSlider.getMax();
                 mediaPlayer.seek(Duration.seconds(newTime));
+            }
+        });
+
+        tblPlaylists.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                try {
+                    lstSongsOnList.setItems(myTunesModel.getSongsForPlaylist(newValue));
+                    lstSongsOnList.getSelectionModel().selectedItemProperty().addListener((obs, oldSong, newSong) -> {
+                        if (newSong != null) {
+                            selectedSong = (MyTunes) newSong; // Set the selected song from the playlist
+                            System.out.println("Selected song from playlist: " + selectedSong.getAddress());
+                            lblPlayingSong.setText("Selected: " + selectedSong.getTitle());
+                        }
+                    });
+                } catch (Exception e) {
+                    displayError(e);
+                }
+            } else {
+                lstSongsOnList.setItems(FXCollections.observableArrayList()); // Clear the list when no playlist is selected
             }
         });
     }
