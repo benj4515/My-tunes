@@ -18,3 +18,8 @@ MyTunes is a Java-based desktop application for managing music playlists. It all
 - **Maven**: For project management and dependency management.
 - **SQL Server**: For database management.
 - **FXML**: For defining the UI layout.
+
+## ToDo
+- Clean up NewSongView and EditSongView.
+- Fix category dropdown in EditSong.
+- Add project wide comments for better documentation.
