@@ -35,6 +35,7 @@ public class MyTunesController implements Initializable {
     public TextField txtSearch;
     public Slider sldSongSlider;
     public ListView lstSongsOnList;
+    public Button btnDeleteSong;
 
     @FXML
     private TableView<Playlist> tblPlaylists;

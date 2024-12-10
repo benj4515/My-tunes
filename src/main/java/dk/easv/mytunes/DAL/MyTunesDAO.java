@@ -107,10 +107,12 @@ public class MyTunesDAO implements ISongDataAccess {
     }
 
     public void deleteSong(MyTunes song) throws Exception {
-        String sql = "DELETE FROM dbo.Songs WHERE ID = ?";
+        String sql = "DELETE FROM dbo.Songs WHERE ID = ?" +
+                " DELETE FROM dbo.PlaylistSongs WHERE IdSong = ?";
         try (Connection conn = dbConnector.getConnection();
         PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, song.getId());
+            stmt.setInt(2, song.getId());
 
             // Run the specified SQL statement
             stmt.executeUpdate();
