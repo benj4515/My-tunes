@@ -106,7 +106,7 @@ public class MyTunesController implements Initializable {
 
         // Custom cell value factory for colTime to display minutes and seconds
         colTime.setCellValueFactory(new PropertyValueFactory<>("time"));
-        colTime.setCellFactory(column -> new TableCell<MyTunes, Integer>() {
+        colTime.setCellFactory(_ -> new TableCell<>() {
             @Override
             protected void updateItem(Integer timeInSeconds, boolean empty) {
                 super.updateItem(timeInSeconds, empty);
