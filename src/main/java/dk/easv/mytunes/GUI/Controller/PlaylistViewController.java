@@ -50,6 +50,7 @@ public class PlaylistViewController {
 
     @FXML
     public void initialize() {
+        // this method sets the value of the textfields in the window
         colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         colArtist.setCellValueFactory(new PropertyValueFactory<>("artist"));
         colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
