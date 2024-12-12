@@ -14,6 +14,8 @@ public class DBConnector {
     private final SQLServerDataSource dataSource;
 
     public DBConnector() throws IOException {
+
+        // this method defines the value of the sql server
         Properties databaseProperties = new Properties();
         databaseProperties.load(new FileInputStream(PROP_FILE));
 
@@ -27,6 +29,7 @@ public class DBConnector {
     }
 
     public static void main(String[] args) throws Exception {
+        // this method tests the connection to the sql server to see if a connection is possible
         DBConnector databaseConnector = new DBConnector();
 
         try (Connection connection = databaseConnector.getConnection()) {

@@ -19,6 +19,7 @@ public class MyTunesDAO implements ISongDataAccess {
 
     @Override
     public List<MyTunes> getAllSongs() throws Exception {
+        // this method pulls every song from the sql song table and returns it into an object that is used in the other layers
 
         ArrayList<MyTunes> allSongs = new ArrayList<>();
 
@@ -50,6 +51,7 @@ public class MyTunesDAO implements ISongDataAccess {
 
     @Override
     public MyTunes createSong(MyTunes song) throws Exception {
+        // this method imports the dataset from the MyTunes object and adds it to the song table in the sql server
         String sql = "INSERT INTO dbo.Songs (Title, Artist, Category, Address, Time) VALUES ( ?, ?, ?, ?, ?)";
         DBConnector dbConnector = new DBConnector();
 
@@ -86,6 +88,7 @@ public class MyTunesDAO implements ISongDataAccess {
 
     @Override
     public void updateSong(MyTunes song) throws Exception {
+        // this method collect edited dataset from the MyTunes object and updates the value in the song table of the sql server
         String sql = "UPDATE dbo.Songs SET Title = ?, Artist = ?, Category = ?, Address = ?, Time = ? WHERE ID = ?";
 
         try (Connection conn = dbConnector.getConnection();
@@ -106,6 +109,7 @@ public class MyTunesDAO implements ISongDataAccess {
     }
 
     public void deleteSong(MyTunes song) throws Exception {
+        // this method deletes the selected song from the song table in the sql server
         String sql = "DELETE FROM dbo.Songs WHERE ID = ?" +
                 " DELETE FROM dbo.PlaylistSongs WHERE IdSong = ?";
         try (Connection conn = dbConnector.getConnection();
@@ -121,6 +125,7 @@ public class MyTunesDAO implements ISongDataAccess {
     }
 
     public void createPlaylist(String playlistName, List<MyTunes> selectedSongs) throws Exception {
+        // this method creates playlist and adds songs with imported dataset from playlist and playlistsongs and adds it to the playlist and playlistsong table in sql server
         String insertPlaylist = "INSERT INTO dbo.Playlist (PlaylistName) VALUES (?)";
         String insertPlaylistSongs = "INSERT INTO dbo.PlaylistSongs (PlaylistId, IdSong, SongName, Position) VALUES (?, ?, ?, ?)";
 
@@ -162,6 +167,7 @@ public class MyTunesDAO implements ISongDataAccess {
 
     // MyTunesDAO.java
     public void deletePlaylist(Playlist playlist) throws Exception {
+        // this method deletes the selecte playlist from the playlist table and playlistsong table in the sql server
         String deletePlaylistSongs = "DELETE FROM dbo.PlaylistSongs WHERE PlaylistId = ?";
         String deletePlaylist = "DELETE FROM dbo.Playlist WHERE Id = ?";
 
@@ -186,6 +192,7 @@ public class MyTunesDAO implements ISongDataAccess {
     }
 
     public List<Playlist> getAllPlaylists() throws Exception {
+        // this method collects all playlists from the playlist table in the sql server and returns them into a list
         String query = "SELECT * FROM dbo.Playlist";
         List<Playlist> playlists = new ArrayList<>();
 
@@ -206,6 +213,7 @@ public class MyTunesDAO implements ISongDataAccess {
     }
 
     public List<MyTunes> getSongsForPlaylist(int playlistId) throws Exception {
+        // this method collects all the songs from the playlistsong table and returns the into a list
         String query = "SELECT s.Id, s.Title, s.Artist, s.Category, s.Address, s.Time, ps.Position " +
                 "FROM dbo.Songs s " +
                 "JOIN dbo.PlaylistSongs ps ON s.Id = ps.IdSong " +
@@ -236,6 +244,7 @@ public class MyTunesDAO implements ISongDataAccess {
     }
 
     public void addSongToPlaylist(MyTunes song, Playlist playlist) throws Exception {
+        // this method adds songs to playlist by collecting dataset from the upper layer and adds it to the playlistsong table in the sql server
         String checkSongExistsSql = "SELECT COUNT(*) FROM dbo.PlaylistSongs WHERE PlaylistId = ? AND IdSong = ?";
         String insertSongSql = "INSERT INTO dbo.PlaylistSongs (PlaylistId, IdSong, SongName, Position) VALUES (?, ?, ?, ?)";
 
@@ -264,6 +273,7 @@ public class MyTunesDAO implements ISongDataAccess {
     }
 
     private int getNextPosition(int playlistId) throws SQLException {
+        // this method gives the position of a song in the playlist by adding the position in the position collum in the playlist song table
         String sql = "SELECT COALESCE(MAX(Position), 0) + 1 AS NextPosition FROM dbo.PlaylistSongs WHERE PlaylistId = ?";
         try (Connection conn = dbConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -278,6 +288,7 @@ public class MyTunesDAO implements ISongDataAccess {
     }
 
     public void deleteSongFromPlaylist(MyTunes song, int playlistId) throws Exception {
+        // this method deletes songs from the playlistsong table in the sql server
         String sql = "DELETE FROM dbo.PlaylistSongs WHERE IdSong = ? AND PlaylistId = ?";
 
         try (Connection conn = dbConnector.getConnection();
@@ -292,6 +303,7 @@ public class MyTunesDAO implements ISongDataAccess {
     }
 
     public void moveSongUpInPlaylist(MyTunes song, int playlistId) throws Exception {
+        // this method updates the position of a song one field/number up in a playlist by editing the position number in the position collum in the playlistsong table
         String getCurrentPositionSql = "SELECT Position FROM dbo.PlaylistSongs WHERE IdSong = ? AND PlaylistId = ?";
         String getAdjacentSongSql = "SELECT IdSong FROM dbo.PlaylistSongs WHERE PlaylistId = ? AND Position = ?";
         String updatePositionSql = "UPDATE dbo.PlaylistSongs SET Position = ? WHERE IdSong = ? AND PlaylistId = ?";
@@ -352,6 +364,7 @@ public class MyTunesDAO implements ISongDataAccess {
     }
 
     public void moveSongDownInPlaylist(MyTunes song, int playlistId) throws Exception {
+        // this method updates the position of a song one field/number down in a playlist by editing the position number in the position collum in the playlistsong table
         String getCurrentPositionSql = "SELECT Position FROM dbo.PlaylistSongs WHERE IdSong = ? AND PlaylistId = ?";
         String getAdjacentSongSql = "SELECT IdSong FROM dbo.PlaylistSongs WHERE PlaylistId = ? AND Position = ?";
         String updatePositionSql = "UPDATE dbo.PlaylistSongs SET Position = ? WHERE IdSong = ? AND PlaylistId = ?";
@@ -408,6 +421,7 @@ public class MyTunesDAO implements ISongDataAccess {
     }
 
     public void updatePlaylist(Playlist playlist, ObservableList<MyTunes> songs) throws SQLException {
+        // this method updates any edited information of a playlist in the playlist table in the sql server
         String updatePlaylistSql = "UPDATE dbo.Playlist SET PlaylistName = ? WHERE Id = ?";
         String deletePlaylistSongsSql = "DELETE FROM dbo.PlaylistSongs WHERE PlaylistId = ?";
         String insertPlaylistSongsSql = "INSERT INTO dbo.PlaylistSongs (PlaylistId, IdSong, SongName, Position) VALUES (?, ?, ?, ?)";
