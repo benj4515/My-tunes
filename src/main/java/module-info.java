@@ -6,6 +6,7 @@ module dk.easv.mytunes {
     requires java.naming;
     requires javafx.media;
     requires java.desktop;
+    requires jaudiotagger;
 
 
     opens dk.easv.mytunes to javafx.fxml;

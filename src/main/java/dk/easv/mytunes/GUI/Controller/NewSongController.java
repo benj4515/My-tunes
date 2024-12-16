@@ -2,12 +2,23 @@ package dk.easv.mytunes.GUI.Controller;
 
 import dk.easv.mytunes.BE.MyTunes;
 import dk.easv.mytunes.GUI.Model.MyTunesModel;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.FileChooser;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+
+import java.io.File;
 
 public class NewSongController {
 
@@ -45,8 +56,8 @@ public class NewSongController {
         );
         cbbCategory.setEditable(true);
 
-        // Add listener
-        txtTitle.textProperty().addListener((_, _, newValue) -> txtFile.setText("Music/" + newValue));
+        // the listener that updates txtFile based on txtTitle
+        // txtTitle.textProperty().addListener((_, _, newValue) -> txtFile.setText("Music/" + newValue));
     }
 
     private void displayError(Throwable t) {
@@ -59,7 +70,7 @@ public class NewSongController {
 
     @FXML
     public void onCreate() throws Exception {
-        // Getting data from ui
+        // Getting data from UI
         String title = txtTitle.getText();
         String artist = txtArtist.getText();
         int time = Integer.parseInt(txtTime.getText());
@@ -71,18 +82,43 @@ public class NewSongController {
             return;
         }
 
-        // new song object
+        // Use the full path of the selected file
+        Path selectedFilePath = Path.of(address);
+        System.out.println("Selected file path: " + selectedFilePath.toAbsolutePath());
+
+        if (!Files.exists(selectedFilePath)) {
+            throw new java.nio.file.NoSuchFileException(selectedFilePath.toString());
+        }
+
+        // Check if the file is in the src/main/resources/Music folder
+        Path musicFolderPath = Path.of("src/main/resources/Music");
+        Path destinationPath = musicFolderPath.resolve(selectedFilePath.getFileName());
+        System.out.println("Destination path: " + destinationPath.toAbsolutePath());
+
+        if (Files.exists(destinationPath)) {
+            System.out.println("Song already exists.");
+            displayError(new Exception("Song already exists."));
+            return;
+        }
+
+        if (!selectedFilePath.startsWith(musicFolderPath)) {
+            Files.copy(selectedFilePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+            address = "Music/" + selectedFilePath.getFileName().toString();
+        }
+
+        // New song object
         MyTunes newSong = new MyTunes(-1, title, artist, category, address, time);
 
-        // call model to create song in the dal
+        // Call model to create song in the DAL
         myTunesModel.createSong(newSong);
         System.out.println("New song created: " + newSong);
 
-        //MyTunesController.tableRefresh();
+        // Refresh the table
         if (myTunesController != null) {
             myTunesController.tableRefresh();
         }
 
+        // Close the window
         Stage stage = (Stage) btnSave.getScene().getWindow();
         stage.close();
     }
@@ -114,5 +150,39 @@ public class NewSongController {
             currentText += ".wav";
         }
         txtFile.setText(currentText);
+    }
+
+    @FXML
+    public void onFilePickerPressed() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Audio Files", "*.mp3", "*.wav")
+        );
+        File selectedFile = fileChooser.showOpenDialog(null);
+
+        if (selectedFile != null) {
+            txtFile.setText(selectedFile.getAbsolutePath()); // Store the full path
+            try {
+                AudioFile audioFile = AudioFileIO.read(selectedFile);
+                Tag tag = audioFile.getTag();
+
+                if (tag != null) {
+                    txtTitle.setText(tag.getFirst(FieldKey.TITLE));
+                    txtArtist.setText(tag.getFirst(FieldKey.ARTIST));
+                    cbbCategory.setValue(tag.getFirst(FieldKey.GENRE));
+                    txtTime.setText(String.valueOf(audioFile.getAudioHeader().getTrackLength()));
+                }
+
+                // Add file extension
+                String fileName = selectedFile.getName().toLowerCase();
+                if (fileName.endsWith(".mp3")) {
+                    onMP3Pressed();
+                } else if (fileName.endsWith(".wav")) {
+                    onWAVPressed();
+                }
+            } catch (Exception e) {
+                displayError(e);
+            }
+        }
     }
 }
