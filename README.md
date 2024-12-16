@@ -4,7 +4,7 @@
 MyTunes is a Java-based desktop application for managing music playlists. It allows users to create, edit, and delete playlists, as well as add, remove, and organize songs within those playlists. The application uses JavaFX for the user interface and connects to a SQL Server database for data persistence.
 
 ## How To Use
-- **Add a song**: To add a song you will first need to place it in the Music folder, and when prompted write the filename / song title, Artist, Category, Lenght in seconds and click the appropriate file type.
+- **Add a song**: To add a song you can pick the song in the new song prompt and it will copy it to the projects Music folder.
 
 ## Features
 - **Playlist Management**: Create, edit, and delete playlists.
